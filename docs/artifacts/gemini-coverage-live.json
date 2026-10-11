@@ -1,11 +1,11 @@
 {
-  "verified_at_utc": "2026-10-11T02:09:59.081672+00:00",
+  "verified_at_utc": "2026-10-11T02:22:06.780366+00:00",
   "mode": "gemini",
   "synthetic_inputs": true,
-  "all_controls_passed": false,
-  "live_verified": false,
+  "all_controls_passed": true,
+  "live_verified": true,
   "provider_generation_checks_attempted": 9,
-  "actual_provider_requests_on_success": null,
+  "actual_provider_requests_on_success": 9,
   "provider_retries": 0,
   "url_destination_requests": 0,
   "preview_media_requests": 0,
@@ -31,11 +31,15 @@
       "related_report_count": 0,
       "observations": {
         "credentials_requested": true,
-        "verification_code_requested": false,
+        "verification_code_requested": null,
         "account_threat_indicated": true
       },
       "evidence_source": "gemini",
-      "verification_level": "unverified_inference"
+      "verification_level": "unverified_inference",
+      "uncertainty_codes": [
+        "identity_unverified",
+        "external_verification_needed"
+      ]
     },
     {
       "case_id": "verification_code_request_text",
@@ -57,17 +61,22 @@
         "account_threat_indicated": false
       },
       "evidence_source": "gemini",
-      "verification_level": "unverified_inference"
+      "verification_level": "unverified_inference",
+      "uncertainty_codes": [
+        "identity_unverified",
+        "external_verification_needed"
+      ]
     },
     {
       "case_id": "account_threat_payment_text",
       "input_type": "text",
       "http_status": 200,
-      "passed": false,
+      "passed": true,
       "mode": "gemini",
       "category": "suspicious_verify",
       "indicator_codes": [
-        "advance_fee",
+        "payment_request",
+        "urgency",
         "account_threat"
       ],
       "report_created": false,
@@ -81,7 +90,10 @@
       },
       "evidence_source": "gemini",
       "verification_level": "unverified_inference",
-      "failure_code": "required_indicator_missing"
+      "uncertainty_codes": [
+        "identity_unverified",
+        "external_verification_needed"
+      ]
     },
     {
       "case_id": "account_threat_only_text",
@@ -99,20 +111,48 @@
       "known_threat": false,
       "related_report_count": 0,
       "observations": {
-        "credentials_requested": false,
-        "verification_code_requested": false,
+        "credentials_requested": null,
+        "verification_code_requested": null,
         "account_threat_indicated": true
       },
       "evidence_source": "gemini",
-      "verification_level": "unverified_inference"
+      "verification_level": "unverified_inference",
+      "uncertainty_codes": [
+        "identity_unverified",
+        "external_verification_needed"
+      ]
     },
     {
       "case_id": "benign_code_alert_text",
       "input_type": "text",
       "http_status": 200,
-      "passed": false,
+      "passed": true,
       "mode": "gemini",
-      "category": "needs_human_review",
+      "category": "insufficient_evidence",
+      "indicator_codes": [],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0,
+      "observations": {
+        "credentials_requested": false,
+        "verification_code_requested": false,
+        "account_threat_indicated": null
+      },
+      "evidence_source": "gemini",
+      "verification_level": "unverified_inference",
+      "uncertainty_codes": [
+        "identity_unverified",
+        "external_verification_needed"
+      ]
+    },
+    {
+      "case_id": "benign_sign_in_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": true,
+      "mode": "gemini",
+      "category": "insufficient_evidence",
       "indicator_codes": [],
       "report_created": false,
       "verified_fraud": false,
@@ -125,28 +165,9 @@
       },
       "evidence_source": "gemini",
       "verification_level": "unverified_inference",
-      "failure_code": "unexpected_assessment_category"
-    },
-    {
-      "case_id": "benign_sign_in_text",
-      "input_type": "text",
-      "http_status": 200,
-      "passed": false,
-      "mode": "gemini",
-      "category": "needs_human_review",
-      "indicator_codes": [],
-      "report_created": false,
-      "verified_fraud": false,
-      "known_threat": false,
-      "related_report_count": 0,
-      "observations": {
-        "credentials_requested": false,
-        "verification_code_requested": null,
-        "account_threat_indicated": null
-      },
-      "evidence_source": "gemini",
-      "verification_level": "unverified_inference",
-      "failure_code": "unexpected_assessment_category"
+      "uncertainty_codes": [
+        "external_verification_needed"
+      ]
     },
     {
       "case_id": "ticket_offer_text",
@@ -169,7 +190,12 @@
         "account_threat_indicated": false
       },
       "evidence_source": "gemini",
-      "verification_level": "unverified_inference"
+      "verification_level": "unverified_inference",
+      "uncertainty_codes": [
+        "identity_unverified",
+        "ticket_ownership_unverified",
+        "external_verification_needed"
+      ]
     },
     {
       "case_id": "credential_request_image",
@@ -193,7 +219,11 @@
         "account_threat_indicated": true
       },
       "evidence_source": "gemini",
-      "verification_level": "unverified_inference"
+      "verification_level": "unverified_inference",
+      "uncertainty_codes": [
+        "identity_unverified",
+        "external_verification_needed"
+      ]
     },
     {
       "case_id": "benign_code_alert_image",
@@ -208,12 +238,15 @@
       "known_threat": false,
       "related_report_count": 0,
       "observations": {
-        "credentials_requested": null,
+        "credentials_requested": false,
         "verification_code_requested": false,
         "account_threat_indicated": null
       },
       "evidence_source": "gemini",
-      "verification_level": "unverified_inference"
+      "verification_level": "unverified_inference",
+      "uncertainty_codes": [
+        "external_verification_needed"
+      ]
     },
     {
       "case_id": "new_url_url",
@@ -233,7 +266,10 @@
         "account_threat_indicated": null
       },
       "evidence_source": "not_analyzed",
-      "verification_level": "not_assessed"
+      "verification_level": "not_assessed",
+      "uncertainty_codes": [
+        "external_verification_needed"
+      ]
     }
   ],
   "provider": "google_gemini",

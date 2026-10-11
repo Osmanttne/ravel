@@ -140,6 +140,24 @@ def test_policy_distinguishes_secret_sharing_from_account_threat_alone(flags, ca
     assert assessment.related_report_count == 0
 
 
+@pytest.mark.parametrize(
+    "payment_reason",
+    ["advance_fee", "transfer_fee", "upfront_payment", "deposit_before_delivery"],
+)
+def test_account_threat_payment_is_not_overstated_as_an_advance_fee(payment_reason):
+    assessment = build_assessment(
+        Extraction(
+            payment_requested=True,
+            payment_reason=payment_reason,
+            account_threat_indicated=True,
+        ),
+        input_kind="text",
+        mode="gemini",
+    )
+    assert assessment.category == "suspicious_verify"
+    assert {item.code for item in assessment.indicators} == {"payment_request", "account_threat"}
+
+
 @pytest.mark.parametrize("uncertainty", ["content_unclear", "conflicting_evidence"])
 def test_uncertainty_review_precedes_all_new_tactic_flags(uncertainty):
     assessment = build_assessment(
@@ -372,7 +390,7 @@ def test_readable_security_controls_preserve_generic_payment_and_nonconflicting_
     text = fixture_examples()[example_id]["text"]
     if example_id == "account_threat_payment":
         payload = output_for(
-            payment_requested=True, payment_reason="generic_payment", account_threat_indicated=True
+            payment_requested=True, payment_reason="advance_fee", account_threat_indicated=True
         )
         payload["evidence_spans"] = [
             {"field": field, "text": text}
@@ -399,7 +417,11 @@ def test_readable_security_controls_preserve_generic_payment_and_nonconflicting_
     assert body["assessment"]["category"] == category
     assert {item["code"] for item in body["assessment"]["indicators"]} == expected_codes
     assert body["observations"]["category"] == "unknown"
-    assert body["observations"]["payment_reason"] == payload["payment_reason"]
+    assert body["observations"]["payment_reason"] == (
+        "generic_payment"
+        if example_id == "account_threat_payment"
+        else payload["payment_reason"]
+    )
     assert "content_unclear" not in body["observations"]["uncertainty_codes"]
     assert "conflicting_evidence" not in body["observations"]["uncertainty_codes"]
     assert_private(body)

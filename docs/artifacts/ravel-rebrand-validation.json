@@ -1,0 +1,43 @@
+{
+  "verified_at_utc": "2026-10-11T01:03:03.497602+00:00",
+  "product_name": "Ravel",
+  "repository_directory": "ravel_codex",
+  "canonical_source_and_path_brand_scan": "passed",
+  "private_environment_names_migrated": true,
+  "private_provider_credentials_preserved": true,
+  "credential_template_values_empty": true,
+  "editable_backend_package": "ravel-backend",
+  "python_environment_relocated": true,
+  "tests": {
+    "backend_passed": 163,
+    "photon_passed": 236,
+    "swift_core_passed": 17,
+    "ruff": "passed"
+  },
+  "post_move_fixture_backend_client_smoke": {
+    "passed_cases": 3,
+    "provider_requests": 0,
+    "photon_messages_sent": 0
+  },
+  "backend_health": {
+    "localhost_gemini": "ok",
+    "local_network_gemini": "ok",
+    "localhost_fixture": "ok",
+    "local_network_fixture": "ok"
+  },
+  "ios": {
+    "signed_physical_device_build": "passed",
+    "app_and_extension_display_names": "Ravel",
+    "built_plists_verified": true,
+    "physical_device_install": "passed",
+    "physical_device_launch": "passed",
+    "simulator_started": false,
+    "initial_installation_block": "free_developer_profile_app_limit",
+    "device_ui_tests_executed_after_rebrand": 0,
+    "manual_photos_share_acceptance": "pending"
+  },
+  "existing_project_ui_test_runner_removal": "approved_by_user_and_completed",
+  "photon_messages_sent_during_rebrand": 0,
+  "gemini_generation_requests_during_rebrand": 0,
+  "automatic_photon_replies_enabled": false
+}

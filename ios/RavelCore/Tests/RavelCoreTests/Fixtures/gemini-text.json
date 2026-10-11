@@ -1,0 +1,49 @@
+{
+  "check_id": "chk_afa9542ea63b4c6e91a9ef13a3b9c265",
+  "mode": "gemini",
+  "assessment": {
+    "category": "suspicious_verify",
+    "summary": "AI extraction suggests an advance fee is requested before delivery. Confirm the content and verify the offer before paying; this inference does not establish fraud.",
+    "verified_fraud": false,
+    "indicators": [
+      {
+        "code": "advance_fee",
+        "description": "AI extraction suggests a fee or payment is requested before delivery.",
+        "evidence_source": "gemini",
+        "verification_level": "unverified_inference"
+      },
+      {
+        "code": "urgency",
+        "description": "AI extraction suggests the content pressures the recipient to act quickly.",
+        "evidence_source": "gemini",
+        "verification_level": "unverified_inference"
+      }
+    ],
+    "recommended_action": "Verify the offer through an independently obtained official contact or ticket platform before sending money or payment credentials.",
+    "related_report_count": 0,
+    "known_threat": false
+  },
+  "observations": {
+    "category": "ticket_offer",
+    "payment_requested": true,
+    "payment_reason": "transfer_fee",
+    "secrecy_requested": null,
+    "urgency_indicated": true,
+    "destinations": [
+      "https://tickets.example"
+    ],
+    "evidence_source": "gemini",
+    "verification_level": "unverified_inference",
+    "uncertainty_codes": [
+      "identity_unverified",
+      "ticket_ownership_unverified",
+      "external_verification_needed"
+    ]
+  },
+  "report_created": false,
+  "limitations": [
+    "Gemini extraction is an unverified model inference, not proof of identity or fraud.",
+    "No community reports or verified threat sources were searched. Report count is zero.",
+    "Only sanitized observations are shown; raw model quotes and URLs are omitted."
+  ]
+}

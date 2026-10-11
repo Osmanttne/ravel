@@ -1,0 +1,44 @@
+{
+  "recorded_at": "2026-10-11T01:00:41.659Z",
+  "verification": "typescript_client_to_fixture_fastapi",
+  "inputs": "synthetic_only",
+  "backend": "http://127.0.0.1:8002",
+  "cases": [
+    {
+      "case": "advance_fee",
+      "content_type": "text",
+      "mode": "fixture",
+      "category": "suspicious_verify",
+      "report_created": false,
+      "related_report_count": 0,
+      "verified_fraud": false,
+      "known_threat": false,
+      "fixture_label_verified": true
+    },
+    {
+      "case": "benign_promotion",
+      "content_type": "text",
+      "mode": "fixture",
+      "category": "insufficient_evidence",
+      "report_created": false,
+      "related_report_count": 0,
+      "verified_fraud": false,
+      "known_threat": false,
+      "fixture_label_verified": true
+    },
+    {
+      "case": "url_only",
+      "content_type": "url",
+      "mode": "fixture",
+      "category": "insufficient_evidence",
+      "report_created": false,
+      "related_report_count": 0,
+      "verified_fraud": false,
+      "known_threat": false,
+      "fixture_label_verified": true
+    }
+  ],
+  "photon_messages_sent": 0,
+  "photon_cloud_session_opened": false,
+  "google_generation_requests": 0
+}

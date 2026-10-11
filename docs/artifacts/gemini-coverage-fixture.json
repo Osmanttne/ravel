@@ -1,0 +1,166 @@
+{
+  "verified_at_utc": "2026-10-11T02:06:24.892115+00:00",
+  "mode": "fixture",
+  "synthetic_inputs": true,
+  "all_controls_passed": true,
+  "live_verified": false,
+  "provider_generation_checks_attempted": 0,
+  "actual_provider_requests_on_success": 0,
+  "provider_retries": 0,
+  "url_destination_requests": 0,
+  "preview_media_requests": 0,
+  "photon_sends": 0,
+  "contains_raw_inputs_secret_values_quotes_or_request_ids": false,
+  "scope": "Limited synthetic controls; no calibrated fraud accuracy claim.",
+  "results": [
+    {
+      "case_id": "credential_request_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": true,
+      "mode": "fixture",
+      "category": "suspicious_verify",
+      "indicator_codes": [
+        "urgency",
+        "credential_request",
+        "account_threat"
+      ],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0
+    },
+    {
+      "case_id": "verification_code_request_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": true,
+      "mode": "fixture",
+      "category": "suspicious_verify",
+      "indicator_codes": [
+        "verification_code_request"
+      ],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0
+    },
+    {
+      "case_id": "account_threat_payment_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": true,
+      "mode": "fixture",
+      "category": "suspicious_verify",
+      "indicator_codes": [
+        "payment_request",
+        "account_threat"
+      ],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0
+    },
+    {
+      "case_id": "account_threat_only_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": true,
+      "mode": "fixture",
+      "category": "insufficient_evidence",
+      "indicator_codes": [
+        "urgency",
+        "account_threat"
+      ],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0
+    },
+    {
+      "case_id": "benign_code_alert_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": true,
+      "mode": "fixture",
+      "category": "insufficient_evidence",
+      "indicator_codes": [],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0
+    },
+    {
+      "case_id": "benign_sign_in_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": true,
+      "mode": "fixture",
+      "category": "insufficient_evidence",
+      "indicator_codes": [],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0
+    },
+    {
+      "case_id": "ticket_offer_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": true,
+      "mode": "fixture",
+      "category": "suspicious_verify",
+      "indicator_codes": [
+        "advance_fee",
+        "urgency"
+      ],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0
+    },
+    {
+      "case_id": "credential_request_image",
+      "input_type": "image",
+      "http_status": 200,
+      "passed": true,
+      "mode": "fixture",
+      "category": "suspicious_verify",
+      "indicator_codes": [
+        "urgency",
+        "credential_request",
+        "account_threat"
+      ],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0
+    },
+    {
+      "case_id": "benign_code_alert_image",
+      "input_type": "image",
+      "http_status": 200,
+      "passed": true,
+      "mode": "fixture",
+      "category": "insufficient_evidence",
+      "indicator_codes": [],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0
+    },
+    {
+      "case_id": "new_url_url",
+      "input_type": "url",
+      "http_status": 200,
+      "passed": true,
+      "mode": "fixture",
+      "category": "insufficient_evidence",
+      "indicator_codes": [],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0
+    }
+  ]
+}

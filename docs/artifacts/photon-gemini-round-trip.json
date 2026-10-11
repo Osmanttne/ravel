@@ -1,0 +1,30 @@
+{
+  "recorded_at_utc": "2026-10-11T01:21:54.502602+00:00",
+  "verification": "controlled_photon_gemini_reviewed_reply",
+  "synthetic_input": "ticket_offer",
+  "offline_photon_tests_passed": 279,
+  "fresh_incoming_message_verified": true,
+  "direct_chat_filter_scope": "registered_project_owner_only",
+  "photon_listener_closed_before_backend_check": true,
+  "backend_checks": 1,
+  "mode": "gemini",
+  "assessment_category": "suspicious_verify",
+  "indicator_codes": [
+    "advance_fee",
+    "urgency"
+  ],
+  "report_created": false,
+  "related_report_count": 0,
+  "known_threat": false,
+  "verified_fraud": false,
+  "exact_reply_preview_created": true,
+  "exact_recipient_and_reply_approved_by_user": true,
+  "outbound_logical_send_calls": 1,
+  "provider_acknowledgement_received": true,
+  "handset_receipt_confirmed_by_user": true,
+  "full_reviewed_round_trip_verified": true,
+  "approval_consumed": true,
+  "further_send_approved": false,
+  "unattended_reply_runner_enabled": false,
+  "phone_numbers_raw_inputs_message_ids_or_secrets_recorded": false
+}

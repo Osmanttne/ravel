@@ -1,0 +1,27 @@
+{
+  "verified_at_utc": "2026-10-11T02:05:56.289816+00:00",
+  "mode": "gemini",
+  "synthetic_inputs": true,
+  "all_controls_passed": false,
+  "live_verified": false,
+  "provider_generation_checks_attempted": 1,
+  "actual_provider_requests_on_success": null,
+  "provider_retries": 0,
+  "url_destination_requests": 0,
+  "preview_media_requests": 0,
+  "photon_sends": 0,
+  "contains_raw_inputs_secret_values_quotes_or_request_ids": false,
+  "scope": "Limited synthetic controls; no calibrated fraud accuracy claim.",
+  "results": [
+    {
+      "case_id": "credential_request_text",
+      "input_type": "text",
+      "http_status": 504,
+      "passed": false,
+      "failure_code": "provider_timeout"
+    }
+  ],
+  "provider": "google_gemini",
+  "model": "gemini-3.8-flash",
+  "sdk_version": "2.29.0"
+}

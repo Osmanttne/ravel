@@ -1,0 +1,189 @@
+{
+  "verified_at_utc": "2026-10-10T21:57:50.626527+00:00",
+  "milestone": 3,
+  "milestone_complete": false,
+  "development_defaults": {
+    "minimum_ios": "17.0",
+    "app_bundle_id": "com.osmantaka.ravel",
+    "extension_bundle_id": "com.osmantaka.ravel.share",
+    "results_inside_extension": true,
+    "app_group_used": false,
+    "signing_team_configured": true
+  },
+  "swift_source_syntax": {
+    "status": "passed",
+    "file_count": 22,
+    "method": "swiftc -frontend -parse -parse-stdlib",
+    "platform_typechecking": true
+  },
+  "configuration_checks": {
+    "plist_lint": "passed",
+    "plist_count": 3,
+    "project_json_and_basic_wiring": "passed",
+    "generator_shell_syntax": "passed",
+    "generator_missing_sdk_gate": "passed",
+    "project_generated": "passed",
+    "native_target_listing": "passed",
+    "embedded_extension_plist": "passed",
+    "local_developer_settings_preserved": "passed",
+    "release_backend_unset": "passed"
+  },
+  "swift_core_library": {
+    "status": "compiled",
+    "platform": "macOS and iOS",
+    "native_xcode_toolchain": true,
+    "installed_toolchain_files_changed": false
+  },
+  "core_standalone_runtime_checks": {
+    "status": "passed",
+    "source": "ios/Validation/CoreChecks.swift",
+    "coverage": [
+      "sanitized backend fixture and real Gemini proof response decoding",
+      "private JSON and multipart metadata",
+      "input and backend configuration limits",
+      "single-item provider selection",
+      "mocked Foundation URLSession",
+      "redirect refusal",
+      "response bounds",
+      "malformed JSON and timeout mapping",
+      "in-flight cancellation"
+    ],
+    "real_server_requests": 0
+  },
+  "image_preparation_runtime_checks": {
+    "status": "passed",
+    "source": "ios/Validation/main.swift",
+    "platform": "macOS",
+    "coverage": [
+      "downsampling and orientation",
+      "no upscaling",
+      "upload and dimension bounds",
+      "source GPS and description present before processing and absent afterward",
+      "regular local file import",
+      "empty invalid oversized directory and remote URL rejection"
+    ]
+  },
+  "xctest": {
+    "written_methods": 17,
+    "executed_methods": 17,
+    "failures": 0,
+    "status": "passed",
+    "command": "swift test --scratch-path .build-xcode",
+    "working_directory": "ios/RavelCore"
+  },
+  "native_ios_acceptance": {
+    "status": "installed_gemini_phone_build_manual_acceptance_in_progress",
+    "project_generated": true,
+    "ios_sdk_available": true,
+    "app_or_extension_built": true,
+    "build_platforms": [
+      "iOS simulator arm64",
+      "iPhone arm64"
+    ],
+    "share_test_host_simulator_build": "passed",
+    "simulator_ui_tests": {
+      "status": "interrupted_before_execution",
+      "executed_methods": 0,
+      "reason": "New iOS 26.5 runtime remained in first-boot migration. User requested physical-device-only testing; simulators were stopped."
+    },
+    "physical_device_detected": true,
+    "physical_device_build": "passed_signed",
+    "physical_device_installed": true,
+    "share_menu_verified": "user_confirmed_available_under_Apps_and_More",
+    "ui_test_methods_written": 6,
+    "automated_photos_access_on_physical_device": "compile-time skipped",
+    "physical_device_model": "iPhone 16",
+    "physical_device_ios": "26.6.1",
+    "share_test_host_device_build_and_install": "passed",
+    "phone_backend_connectivity": "confirmed_by_user",
+    "physical_device_ui_tests": {
+      "passed_methods": [
+        "testManualURLIsParsedWithoutAIAnalysis"
+      ],
+      "initial_failure": "Keyboard obscured the privacy footer. App focus dismissal and explicit URL-only result context were fixed; the retry passed.",
+      "latest_completed_run_failures": 4,
+      "remaining_synthetic_tests": {
+        "latest_run_passed": 0,
+        "latest_run_failed": 4,
+        "issues": [
+          "Missing accessible UI elements",
+          "UI automation authorization failures"
+        ],
+        "status": "unresolved; phone automation stopped when user prioritized live Gemini analysis"
+      },
+      "photos_share_and_manual_picker": "pending_user_selection_of_synthetic_screenshot",
+      "automated_photos_access_on_physical_device": false
+    },
+    "manual_gemini_image_result": {
+      "status": "user_confirmed",
+      "category": "suspicious_verify",
+      "entry_point": "awaiting_user_clarification",
+      "initial_error": "User reported incomplete extraction; retry produced the assessment.",
+      "private_input_captured_or_persisted_for_validation": false
+    }
+  },
+  "provider_requests_during_this_m3_validation": 4,
+  "backend_health": {
+    "status": "ok",
+    "mode": "gemini",
+    "port": 8001
+  },
+  "toolchain": {
+    "xcode": "26.6",
+    "xcode_build": "17F113",
+    "ios_sdk": "26.5",
+    "xcodegen": "2.46.0"
+  },
+  "backend_for_device_validation": {
+    "status": "ok",
+    "mode": "fixture",
+    "port": 8002,
+    "scope": "Mac private LAN interface",
+    "current_phone_build_uses_this_server": false
+  },
+  "gemini_backend_for_phone": {
+    "status": "ok",
+    "mode": "gemini",
+    "port": 8001,
+    "scope": "Mac private LAN interface",
+    "current_phone_build_uses_this_server": true,
+    "app_and_extension_plists_verified": true,
+    "signed_build_install_and_launch": "passed"
+  },
+  "controlled_gemini_validation": {
+    "generation_requests": 4,
+    "model_metadata_requests": 1,
+    "initial_text_generation": "provider_timeout",
+    "diagnostic_text_generation": "parsed_success",
+    "final_text_and_image_verification": "passed",
+    "final_verification_generation_requests": 2,
+    "synthetic_inputs": true,
+    "proof": "docs/artifacts/gemini-live-verification.json",
+    "user_initiated_phone_requests": "not counted by this record"
+  },
+  "rebranding": {
+    "product_name": "Ravel",
+    "reference_names_updated": true,
+    "recorded_native_validation_precedes_rebrand": true,
+    "native_build_validation_after_rebrand": "passed_signed",
+    "verified_at_utc": "2026-10-11T01:03:03.497602+00:00",
+    "core_tests_passed_after_rebrand": 17,
+    "unsigned_generic_device_app_extension_and_test_host_builds": "passed",
+    "ui_test_target_build_for_testing": "passed",
+    "built_app_and_extension_plists_verified": true,
+    "physical_device_install_after_rebrand": "passed",
+    "physical_device_app_launch_after_rebrand": "passed",
+    "device_ui_tests_after_rebrand": "not_executed",
+    "backend_restart_after_repository_move": "passed",
+    "backend_health_after_restart": {
+      "localhost_gemini": "ok",
+      "local_network_gemini": "ok",
+      "localhost_fixture": "ok",
+      "local_network_fixture": "ok"
+    },
+    "installation_requires_user_approval_to_remove_existing_test_runner": false,
+    "initial_installation_block": "free_developer_profile_app_limit",
+    "existing_ui_test_runner_removal_approved_by_user": true,
+    "existing_ui_test_runner_removed": true
+  }
+}

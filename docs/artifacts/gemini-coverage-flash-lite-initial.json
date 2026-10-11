@@ -1,0 +1,242 @@
+{
+  "verified_at_utc": "2026-10-11T02:09:59.081672+00:00",
+  "mode": "gemini",
+  "synthetic_inputs": true,
+  "all_controls_passed": false,
+  "live_verified": false,
+  "provider_generation_checks_attempted": 9,
+  "actual_provider_requests_on_success": null,
+  "provider_retries": 0,
+  "url_destination_requests": 0,
+  "preview_media_requests": 0,
+  "photon_sends": 0,
+  "contains_raw_inputs_secret_values_quotes_or_request_ids": false,
+  "scope": "Limited synthetic controls; no calibrated fraud accuracy claim.",
+  "results": [
+    {
+      "case_id": "credential_request_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": true,
+      "mode": "gemini",
+      "category": "suspicious_verify",
+      "indicator_codes": [
+        "urgency",
+        "credential_request",
+        "account_threat"
+      ],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0,
+      "observations": {
+        "credentials_requested": true,
+        "verification_code_requested": false,
+        "account_threat_indicated": true
+      },
+      "evidence_source": "gemini",
+      "verification_level": "unverified_inference"
+    },
+    {
+      "case_id": "verification_code_request_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": true,
+      "mode": "gemini",
+      "category": "suspicious_verify",
+      "indicator_codes": [
+        "verification_code_request"
+      ],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0,
+      "observations": {
+        "credentials_requested": false,
+        "verification_code_requested": true,
+        "account_threat_indicated": false
+      },
+      "evidence_source": "gemini",
+      "verification_level": "unverified_inference"
+    },
+    {
+      "case_id": "account_threat_payment_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": false,
+      "mode": "gemini",
+      "category": "suspicious_verify",
+      "indicator_codes": [
+        "advance_fee",
+        "account_threat"
+      ],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0,
+      "observations": {
+        "credentials_requested": false,
+        "verification_code_requested": false,
+        "account_threat_indicated": true
+      },
+      "evidence_source": "gemini",
+      "verification_level": "unverified_inference",
+      "failure_code": "required_indicator_missing"
+    },
+    {
+      "case_id": "account_threat_only_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": true,
+      "mode": "gemini",
+      "category": "insufficient_evidence",
+      "indicator_codes": [
+        "urgency",
+        "account_threat"
+      ],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0,
+      "observations": {
+        "credentials_requested": false,
+        "verification_code_requested": false,
+        "account_threat_indicated": true
+      },
+      "evidence_source": "gemini",
+      "verification_level": "unverified_inference"
+    },
+    {
+      "case_id": "benign_code_alert_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": false,
+      "mode": "gemini",
+      "category": "needs_human_review",
+      "indicator_codes": [],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0,
+      "observations": {
+        "credentials_requested": null,
+        "verification_code_requested": null,
+        "account_threat_indicated": null
+      },
+      "evidence_source": "gemini",
+      "verification_level": "unverified_inference",
+      "failure_code": "unexpected_assessment_category"
+    },
+    {
+      "case_id": "benign_sign_in_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": false,
+      "mode": "gemini",
+      "category": "needs_human_review",
+      "indicator_codes": [],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0,
+      "observations": {
+        "credentials_requested": false,
+        "verification_code_requested": null,
+        "account_threat_indicated": null
+      },
+      "evidence_source": "gemini",
+      "verification_level": "unverified_inference",
+      "failure_code": "unexpected_assessment_category"
+    },
+    {
+      "case_id": "ticket_offer_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": true,
+      "mode": "gemini",
+      "category": "suspicious_verify",
+      "indicator_codes": [
+        "advance_fee",
+        "urgency"
+      ],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0,
+      "observations": {
+        "credentials_requested": false,
+        "verification_code_requested": false,
+        "account_threat_indicated": false
+      },
+      "evidence_source": "gemini",
+      "verification_level": "unverified_inference"
+    },
+    {
+      "case_id": "credential_request_image",
+      "input_type": "image",
+      "http_status": 200,
+      "passed": true,
+      "mode": "gemini",
+      "category": "suspicious_verify",
+      "indicator_codes": [
+        "urgency",
+        "credential_request",
+        "account_threat"
+      ],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0,
+      "observations": {
+        "credentials_requested": true,
+        "verification_code_requested": false,
+        "account_threat_indicated": true
+      },
+      "evidence_source": "gemini",
+      "verification_level": "unverified_inference"
+    },
+    {
+      "case_id": "benign_code_alert_image",
+      "input_type": "image",
+      "http_status": 200,
+      "passed": true,
+      "mode": "gemini",
+      "category": "insufficient_evidence",
+      "indicator_codes": [],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0,
+      "observations": {
+        "credentials_requested": null,
+        "verification_code_requested": false,
+        "account_threat_indicated": null
+      },
+      "evidence_source": "gemini",
+      "verification_level": "unverified_inference"
+    },
+    {
+      "case_id": "new_url_url",
+      "input_type": "url",
+      "http_status": 200,
+      "passed": true,
+      "mode": "gemini",
+      "category": "insufficient_evidence",
+      "indicator_codes": [],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0,
+      "observations": {
+        "credentials_requested": null,
+        "verification_code_requested": null,
+        "account_threat_indicated": null
+      },
+      "evidence_source": "not_analyzed",
+      "verification_level": "not_assessed"
+    }
+  ],
+  "provider": "google_gemini",
+  "model": "gemini-3.5-flash-lite",
+  "sdk_version": "2.29.0"
+}

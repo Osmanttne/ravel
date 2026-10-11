@@ -1,0 +1,7 @@
+// Copy to Developer.xcconfig for local signing and backend settings.
+// Never put provider credentials in this file.
+DEVELOPMENT_TEAM =
+// The slash variable prevents an HTTP URL from becoming an xcconfig comment.
+RAVEL_URL_SLASH = /
+RAVEL_API_BASE_URL = http:$(RAVEL_URL_SLASH)$(RAVEL_URL_SLASH)localhost:8001
+// Release's project setting overrides this address and remains empty.

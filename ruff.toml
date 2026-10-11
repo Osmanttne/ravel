@@ -1,0 +1,2 @@
+# Use the backend's declared lint rules for root-level diagnostic scripts too.
+extend = "backend/pyproject.toml"

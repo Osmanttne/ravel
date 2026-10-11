@@ -1,0 +1,51 @@
+{
+  "verified_at_utc": "2026-10-11T02:08:56.493373+00:00",
+  "mode": "gemini",
+  "synthetic_inputs": true,
+  "all_controls_passed": false,
+  "live_verified": false,
+  "provider_generation_checks_attempted": 2,
+  "actual_provider_requests_on_success": null,
+  "provider_retries": 0,
+  "url_destination_requests": 0,
+  "preview_media_requests": 0,
+  "photon_sends": 0,
+  "contains_raw_inputs_secret_values_quotes_or_request_ids": false,
+  "scope": "Limited synthetic controls; no calibrated fraud accuracy claim.",
+  "results": [
+    {
+      "case_id": "credential_request_text",
+      "input_type": "text",
+      "http_status": 200,
+      "passed": true,
+      "mode": "gemini",
+      "category": "suspicious_verify",
+      "indicator_codes": [
+        "urgency",
+        "credential_request",
+        "account_threat"
+      ],
+      "report_created": false,
+      "verified_fraud": false,
+      "known_threat": false,
+      "related_report_count": 0,
+      "observations": {
+        "credentials_requested": true,
+        "verification_code_requested": null,
+        "account_threat_indicated": true
+      },
+      "evidence_source": "gemini",
+      "verification_level": "unverified_inference"
+    },
+    {
+      "case_id": "verification_code_request_text",
+      "input_type": "text",
+      "http_status": 504,
+      "passed": false,
+      "failure_code": "provider_timeout"
+    }
+  ],
+  "provider": "google_gemini",
+  "model": "gemini-3.8-flash",
+  "sdk_version": "2.29.0"
+}

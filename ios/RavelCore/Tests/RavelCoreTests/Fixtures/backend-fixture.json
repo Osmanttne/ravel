@@ -1,0 +1,27 @@
+{
+  "check_id": "chk_8492e72453b14dbb936737097588d945",
+  "mode": "fixture",
+  "assessment": {
+    "category": "suspicious_verify",
+    "summary": "An advance fee is requested before delivery. Verify the offer before paying; this claim does not establish fraud.",
+    "verified_fraud": false,
+    "indicators": [
+      {
+        "code": "advance_fee",
+        "description": "The offer requests a fee or payment before delivery.",
+        "evidence_source": "submitted_content",
+        "verification_level": "observed_claim"
+      }
+    ],
+    "recommended_action": "Verify the offer through an independently obtained official contact or ticket platform before sending money or payment credentials.",
+    "related_report_count": 0,
+    "known_threat": false
+  },
+  "observations": null,
+  "report_created": false,
+  "limitations": [
+    "MOCK / FIXTURE MODE: deterministic synthetic extraction, not live AI or threat intelligence.",
+    "No community reports or verified threat sources were searched. Report count is zero.",
+    "Mock text patterns are limited; identity and legitimacy have not been verified."
+  ]
+}

@@ -13,9 +13,3 @@
 - **iOS development:** Swift, Xcode, Swift Package Manager, and XcodeGen. [XcodeGen](https://github.com/yonaskolb/XcodeGen)
 - **Testing:** pytest, Node's built-in test runner, and Swift/XCTest.
 - **AI-assisted development:** OpenAI Codex CLI.
-
-## Slide-ready credit line
-
-> Built with SwiftUI, FastAPI, Google Gemini, Photon Spectrum, TypeScript, and XcodeGen. Developed with assistance from OpenAI Codex.
-
-Tiger Data was considered for future opt-in reports and campaign matching, but is not integrated in the current project. Community reporting and report matching are not available in this build.

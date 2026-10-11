@@ -16,7 +16,13 @@ struct ShareCheckView: View {
                 RavelBackground()
                 Group {
                     if let response = model.response, model.phase == .result {
-                        RavelResultView(response: response, isURLOnly: isURLOnly)
+                        RavelResultView(
+                            response: response,
+                            isURLOnly: isURLOnly,
+                            imageData: resultImageData,
+                            reviewInputKind: reviewInputKind,
+                            onReview: { decisions in try await model.reassess(decisions) }
+                        )
                     } else {
                         ScrollView {
                             VStack(alignment: .leading, spacing: 0) {
@@ -64,6 +70,21 @@ struct ShareCheckView: View {
     private var isURLOnly: Bool {
         if case .url = model.content { return true }
         return false
+    }
+
+    private var resultImageData: Data? {
+        guard let content = model.content else { return nil }
+        if case .image(let image) = content { return image.data }
+        return nil
+    }
+
+    private var reviewInputKind: String? {
+        guard let content = model.content else { return nil }
+        switch content {
+        case .image: return "image"
+        case .text: return "text"
+        case .url: return nil
+        }
     }
 
     @ViewBuilder private var contentBody: some View {

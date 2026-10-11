@@ -24,6 +24,18 @@ def test_valid_sdk_output_preserves_nullable_flags_and_observations():
     assert extraction.uncertainty_codes == ["identity_unverified", "ticket_ownership_unverified"]
 
 
+def test_image_output_preserves_approximate_boxes_for_evidenced_positive_fields():
+    payload = valid_output()
+    payload["visual_regions"] = [
+        {"field": "urgency_indicated", "box_2d": [120, 90, 210, 650]}
+    ]
+    extraction = parse_gemini_response(sdk_response(payload))
+    assert extraction.visual_regions[0].field == "urgency_indicated"
+    assert extraction.visual_regions[0].box_2d == [120, 90, 210, 650]
+    with pytest.raises(InputError):
+        parse_gemini_response(sdk_response(payload), source_text=TEXT)
+
+
 def test_long_visible_url_can_use_a_bounded_verbatim_authority_quote():
     long_url = "https://tickets.example/" + "x" * 700 + "?token=long-private-token"
     payload = valid_output()
@@ -45,6 +57,8 @@ def invalid_outputs():
         {"urls_visible": ["http://127.0.0.1/private"]},
         {"urls_visible": ["https://unseen.example/offer"]},
         {"uncertainty_codes": ["private-model-explanation"]},
+        {"visual_regions": [{"field": "urgency_indicated", "box_2d": [50, 50, 50, 200]}]},
+        {"visual_regions": [{"field": "credentials_requested", "box_2d": [50, 50, 200, 200]}]},
         {"evidence_spans": []},
         {"payment_requested": None},
         {"evidence_spans": [{"field": "verified_fraud", "text": "Act now."}]},
@@ -141,15 +155,32 @@ def test_image_bytes_are_reencoded_without_metadata_and_context_is_user_data():
     extractor.extract_image(validated, context)
     call = client.models.calls[0]
     parts = request_parts(call)
-    inline = [part.inline_data for part in parts if part.inline_data is not None]
-    assert len(inline) == 1
-    assert inline[0].mime_type == "image/png"
-    assert b"private-image-metadata-secret" not in inline[0].data
-    with Image.open(BytesIO(inline[0].data)) as sent_image:
+    inline_parts = [part for part in parts if part.inline_data is not None]
+    assert len(inline_parts) == 1
+    image_part = inline_parts[0]
+    assert image_part.inline_data.mime_type == "image/png"
+    assert image_part.media_resolution is None
+    assert b"private-image-metadata-secret" not in image_part.inline_data.data
+    with Image.open(BytesIO(image_part.inline_data.data)) as sent_image:
         assert "comment" not in sent_image.info
         assert sent_image.size == (8, 8)
     assert context not in str(call["config"].system_instruction)
     assert any(context in (part.text or "") for part in parts)
+
+
+def test_gemini_3_images_request_high_media_resolution():
+    image = Image.new("RGB", (8, 8), "blue")
+    buffer = BytesIO()
+    image.save(buffer, format="PNG")
+    validated = validate_image(buffer.getvalue(), "image/png")
+    client = FakeClient()
+    extractor = GeminiExtractor(
+        api_key="dummy-key", model="gemini-3.5-flash-lite", client=client
+    )
+    extractor.extract_image(validated)
+    inline_parts = [part for part in request_parts(client.models.calls[0]) if part.inline_data]
+    assert len(inline_parts) == 1
+    assert inline_parts[0].media_resolution.level == types.PartMediaResolutionLevel.MEDIA_RESOLUTION_HIGH
 
 
 def test_url_only_check_does_not_call_gemini():

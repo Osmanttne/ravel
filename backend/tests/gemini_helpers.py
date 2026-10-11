@@ -17,6 +17,7 @@ def valid_output():
         "verification_code_requested": None,
         "account_threat_indicated": None,
         "urls_visible": [URL],
+        "visual_regions": [],
         "evidence_spans": [
             {"field": "category", "text": "Free concert tickets."},
             {

@@ -43,6 +43,58 @@ public enum UncertaintyCode: String, Codable, Sendable {
     case contentUnclear = "content_unclear", incompleteContent = "incomplete_content"
     case conflictingEvidence = "conflicting_evidence", externalVerificationNeeded = "external_verification_needed"
 }
+public enum VisualSignal: String, Codable, CaseIterable, Hashable, Sendable {
+    case paymentRequested = "payment_requested"
+    case urgencyIndicated = "urgency_indicated"
+    case credentialsRequested = "credentials_requested"
+    case verificationCodeRequested = "verification_code_requested"
+    case accountThreatIndicated = "account_threat_indicated"
+
+    public var title: String {
+        switch self {
+        case .paymentRequested: return "Payment request"
+        case .urgencyIndicated: return "Urgency"
+        case .credentialsRequested: return "Password or login details"
+        case .verificationCodeRequested: return "Verification code request"
+        case .accountThreatIndicated: return "Account threat"
+        }
+    }
+}
+
+public struct VisualRegion: Codable, Sendable {
+    public let field: VisualSignal
+    public let box2D: [Int]
+    enum CodingKeys: String, CodingKey { case field; case box2D = "box_2d" }
+}
+
+public enum SignalReviewChoice: String, Codable, Hashable, Sendable {
+    case confirm, notPresent = "not_present", unclear
+}
+
+public struct SignalReviewDecision: Codable, Sendable {
+    public let field: VisualSignal
+    public let choice: SignalReviewChoice
+    public init(field: VisualSignal, choice: SignalReviewChoice) {
+        self.field = field
+        self.choice = choice
+    }
+}
+
+public struct SignalReassessmentRequest: Codable, Sendable {
+    public let inputKind: String
+    public let observations: PublicObservations
+    public let decisions: [SignalReviewDecision]
+    public init(inputKind: String, observations: PublicObservations,
+                decisions: [SignalReviewDecision]) {
+        self.inputKind = inputKind
+        self.observations = observations
+        self.decisions = decisions
+    }
+    enum CodingKeys: String, CodingKey {
+        case observations, decisions
+        case inputKind = "input_kind"
+    }
+}
 
 public struct Indicator: Codable, Sendable {
     public let code: String
@@ -104,6 +156,7 @@ public struct PublicObservations: Codable, Sendable {
     public let credentialsRequested: Bool?
     public let verificationCodeRequested: Bool?
     public let accountThreatIndicated: Bool?
+    public let visualRegions: [VisualRegion]
     public let destinations: [String]
     public let evidenceSource: ObservationEvidenceSource
     public let verificationLevel: ObservationVerificationLevel
@@ -115,8 +168,26 @@ public struct PublicObservations: Codable, Sendable {
         case credentialsRequested = "credentials_requested"
         case verificationCodeRequested = "verification_code_requested"
         case accountThreatIndicated = "account_threat_indicated"
+        case visualRegions = "visual_regions"
         case evidenceSource = "evidence_source", verificationLevel = "verification_level"
         case uncertaintyCodes = "uncertainty_codes"
+    }
+
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        category = try values.decodeIfPresent(ContentCategory.self, forKey: .category) ?? .unknown
+        paymentRequested = try values.decodeIfPresent(Bool.self, forKey: .paymentRequested)
+        paymentReason = try values.decodeIfPresent(PaymentReason.self, forKey: .paymentReason)
+        secrecyRequested = try values.decodeIfPresent(Bool.self, forKey: .secrecyRequested)
+        urgencyIndicated = try values.decodeIfPresent(Bool.self, forKey: .urgencyIndicated)
+        credentialsRequested = try values.decodeIfPresent(Bool.self, forKey: .credentialsRequested)
+        verificationCodeRequested = try values.decodeIfPresent(Bool.self, forKey: .verificationCodeRequested)
+        accountThreatIndicated = try values.decodeIfPresent(Bool.self, forKey: .accountThreatIndicated)
+        visualRegions = try values.decodeIfPresent([VisualRegion].self, forKey: .visualRegions) ?? []
+        destinations = try values.decodeIfPresent([String].self, forKey: .destinations) ?? []
+        evidenceSource = try values.decodeIfPresent(ObservationEvidenceSource.self, forKey: .evidenceSource) ?? .notAnalyzed
+        verificationLevel = try values.decodeIfPresent(ObservationVerificationLevel.self, forKey: .verificationLevel) ?? .notAssessed
+        uncertaintyCodes = try values.decodeIfPresent([UncertaintyCode].self, forKey: .uncertaintyCodes) ?? []
     }
 }
 
@@ -134,7 +205,18 @@ public struct CheckResponse: Codable, Sendable {
         guard !checkID.isEmpty, !reportCreated else { throw CheckError.invalidResponse }
         if let observations {
             guard observations.destinations.count <= 20, observations.uncertaintyCodes.count <= 6,
-                  observations.destinations.allSatisfy(Self.isOrigin) else {
+                  observations.visualRegions.count <= 12,
+                  observations.destinations.allSatisfy(Self.isOrigin),
+                  observations.visualRegions.allSatisfy({ region in
+                      guard region.box2D.count == 4,
+                            region.box2D.allSatisfy({ (0...1000).contains($0) }),
+                            let top = region.box2D.first,
+                            let left = region.box2D.dropFirst().first,
+                            let bottom = region.box2D.dropFirst(2).first,
+                            let right = region.box2D.last,
+                            top < bottom, left < right else { return false }
+                      return Self.isPositive(region.field, observations: observations)
+                  }) else {
                 throw CheckError.invalidResponse
             }
         }
@@ -161,5 +243,14 @@ public struct CheckResponse: Codable, Sendable {
               url.user == nil, url.password == nil, url.query == nil, url.fragment == nil,
               url.path.isEmpty else { return false }
         return true
+    }
+    private static func isPositive(_ field: VisualSignal, observations: PublicObservations) -> Bool {
+        switch field {
+        case .paymentRequested: return observations.paymentRequested == true
+        case .urgencyIndicated: return observations.urgencyIndicated == true
+        case .credentialsRequested: return observations.credentialsRequested == true
+        case .verificationCodeRequested: return observations.verificationCodeRequested == true
+        case .accountThreatIndicated: return observations.accountThreatIndicated == true
+        }
     }
 }

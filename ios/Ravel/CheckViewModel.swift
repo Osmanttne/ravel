@@ -157,6 +157,22 @@ final class CheckViewModel: ObservableObject {
         errorMessage = nil
     }
 
+    func reassess(_ decisions: [SignalReviewDecision]) async throws -> Assessment {
+        guard let client, let response = response, response.mode == .gemini,
+              let observations = response.observations, !decisions.isEmpty else {
+            throw CheckError.invalidResponse
+        }
+        let kind: String
+        switch inputKind {
+        case .image: kind = "image"
+        case .text: kind = "text"
+        case .url: throw CheckError.invalidResponse
+        }
+        return try await client.reassess(
+            SignalReassessmentRequest(inputKind: kind, observations: observations, decisions: decisions)
+        )
+    }
+
     func cancelAndClear() {
         cancelCheck()
         preparationTask?.cancel()

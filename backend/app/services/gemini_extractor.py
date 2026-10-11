@@ -20,12 +20,12 @@ from google.genai import errors, types
 from PIL import Image, ImageOps
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
 
-from app.schemas import Extraction
+from app.schemas import Extraction, VisualRegion
 from app.services.ingest import ImagePayload, InputError
 from app.services.url_intelligence import ParsedURL, parse_url
 
 MAX_RESPONSE_BYTES = 32 * 1024
-MAX_INLINE_IMAGE_BYTES = 5 * 1024 * 1024
+MAX_INLINE_IMAGE_BYTES = 8 * 1024 * 1024
 GOOGLE_API_BASE_URL = "https://generativelanguage.googleapis.com"
 
 _logger = logging.getLogger(__name__)
@@ -107,6 +107,15 @@ a password or code. Never sharing a code with someone else and entering it
 in a personally initiated official app are consistent, different actions.
 Preserve genuine ambiguity or contradictions using the appropriate code;
 never treat these distinctions as proof of legitimacy or a safety guarantee.
+For screenshot input only, return visual_regions as an empty list unless a
+readable region directly supports one of these affirmative fields:
+payment_requested, urgency_indicated, credentials_requested,
+verification_code_requested, or account_threat_indicated. Each region uses
+box_2d [ymin, xmin, ymax, xmax] with integer coordinates from 0 to 1000,
+normalized to the full image. Keep boxes tight around the visible words that
+support the field. A region must match a true field and its evidence span.
+Boxes are approximate visual pointers, not verified evidence. For text input,
+visual_regions must always be an empty list. Never draw boxes over a whole image.
 """
 
 
@@ -159,6 +168,7 @@ class GeminiOutput(BaseModel):
     urls_visible: list[Annotated[str, StringConstraints(min_length=1, max_length=2048)]] = Field(
         max_length=20
     )
+    visual_regions: list[VisualRegion] = Field(max_length=12)
     evidence_spans: list[GeminiEvidenceSpan] = Field(max_length=20)
     uncertainty_codes: list[
         Literal[
@@ -264,6 +274,11 @@ def parse_gemini_response(response: Any, *, source_text: str | None = None) -> E
             raise ValueError("Evidence quotes must occur in the submitted text.")
         if output.urls_visible and "urls_visible" not in fields_with_quotes:
             raise ValueError("Visible URLs require evidence.")
+        if source_text is not None and output.visual_regions:
+            raise ValueError("Text input cannot contain visual regions.")
+        for region in output.visual_regions:
+            if getattr(output, region.field) is not True or region.field not in fields_with_quotes:
+                raise ValueError("Visual regions must support a positive evidenced field.")
         for url in output.urls_visible:
             parse_url(url)  # Parse only; never resolve or fetch a model-supplied URL.
             if source_text is not None and url not in source_text:
@@ -463,6 +478,12 @@ class GeminiExtractor:
 
     def extract_image(self, image: ImagePayload, context: str | None = None) -> Extraction:
         data, mime_type = _prepare_image(image)
+        model_name = self._model.removeprefix("models/")
+        media_resolution = (
+            types.MediaResolution.MEDIA_RESOLUTION_HIGH
+            if model_name.startswith("gemini-3")
+            else None
+        )
         context_data = json.dumps(
             {"kind": "untrusted_screenshot", "untrusted_accompanying_context": context},
             ensure_ascii=False,
@@ -470,7 +491,11 @@ class GeminiExtractor:
         return self._generate(
             [
                 types.Part.from_text(text=context_data),
-                types.Part.from_bytes(data=data, mime_type=mime_type),
+                types.Part.from_bytes(
+                    data=data,
+                    mime_type=mime_type,
+                    media_resolution=media_resolution,
+                ),
             ]
         )
 

@@ -17,11 +17,13 @@ from app.core.config import Settings
 from app.core.http import RequestGuardMiddleware, error_response
 from app.schemas import (
     CHECK_REQUEST_ADAPTER,
+    Assessment,
     CheckMode,
     CheckResponse,
     Extraction,
     ImageCheckMetadata,
     PublicObservations,
+    ReassessmentRequest,
     ReportRequest,
     ReportResponse,
     SourceChannel,
@@ -67,6 +69,7 @@ GEMINI_LIMITATIONS = [
     "Gemini extraction is an unverified model inference, not proof of identity or fraud.",
     "No community reports or verified threat sources were searched. Report count is zero.",
     "Only sanitized observations are shown; raw model quotes and URLs are omitted.",
+    "Screenshot highlights are approximate model-generated pointers and can be misplaced.",
 ]
 PUBLIC_PAYMENT_REASONS = {
     "advance_fee",
@@ -286,6 +289,7 @@ def create_app(settings: Settings | None = None, *, extractor: Extractor | None 
                     credentials_requested=observation.credentials_requested,
                     verification_code_requested=observation.verification_code_requested,
                     account_threat_indicated=observation.account_threat_indicated,
+                    visual_regions=(observation.visual_regions if input_kind == "image" else []),
                     destinations=destinations,
                     evidence_source="gemini",
                     verification_level="unverified_inference",
@@ -310,6 +314,42 @@ def create_app(settings: Settings | None = None, *, extractor: Extractor | None 
             limitations=limitations,
             observations=public_observations,
         )
+
+    @app.post("/v1/reassess", response_model=Assessment, responses=ERRORS)
+    async def reassess(request: Request) -> Assessment:
+        if mode != "gemini":
+            raise InputError("service_unavailable", "Review is unavailable in fixture mode.", 503)
+        submission = ReassessmentRequest.model_validate(await _json_body(request))
+        observations = submission.observations
+        if (
+            observations.evidence_source != "gemini"
+            or observations.verification_level != "unverified_inference"
+            or (observations.visual_regions and submission.input_kind != "image")
+        ):
+            raise InputError("invalid_request", "Only Gemini observations can be reviewed.", 422)
+
+        seen_fields: set[str] = set()
+        updates: dict[str, object] = {}
+        for decision in submission.decisions:
+            if decision.field in seen_fields or getattr(observations, decision.field) is not True:
+                raise InputError(
+                    "invalid_request", "Review decisions must match a current positive finding.", 422
+                )
+            seen_fields.add(decision.field)
+            updates[decision.field] = {
+                "confirm": True,
+                "not_present": False,
+                "unclear": None,
+            }[decision.choice]
+        if "payment_requested" in updates and updates["payment_requested"] is not True:
+            updates["payment_reason"] = None
+
+        extraction_values = observations.model_dump(
+            exclude={"destinations", "evidence_source", "verification_level", "visual_regions"}
+        )
+        extraction_values.update(updates)
+        extraction = Extraction.model_validate(extraction_values)
+        return build_assessment(extraction, input_kind=submission.input_kind, mode="gemini")
 
     @app.post("/v1/reports", response_model=ReportResponse, responses=ERRORS)
     async def reports(request: Request) -> ReportResponse:

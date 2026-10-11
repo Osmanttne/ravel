@@ -75,6 +75,58 @@ def test_connected_check_exposes_sanitized_observations_not_verified_fraud(
         assert len(sdk.models.calls) == 1
 
 
+def test_image_regions_are_returned_and_reassessment_uses_policy_without_another_gemini_call(
+    gemini_settings,
+):
+    payload = valid_output()
+    payload["visual_regions"] = [
+        {"field": "payment_requested", "box_2d": [120, 90, 210, 650]}
+    ]
+    sdk = FakeClient(response=sdk_response(payload))
+    extractor = GeminiExtractor(api_key="dummy-key", model="gemini-test-model", client=sdk)
+    with TestClient(create_app(gemini_settings, extractor=extractor)) as client:
+        checked = client.post(
+            "/v1/check",
+            data={"content_type": "image"},
+            files={"image": ("ticket_offer.png", FIXTURE_IMAGE.read_bytes(), "image/png")},
+        )
+        body = assert_connected_private(checked, "suspicious_verify")
+        observations = body["observations"]
+        assert observations["visual_regions"] == payload["visual_regions"]
+        assert "evidence_spans" not in observations
+
+        reviewed = client.post(
+            "/v1/reassess",
+            json={
+                "input_kind": "image",
+                "observations": observations,
+                "decisions": [{"field": "payment_requested", "choice": "not_present"}],
+            },
+        )
+        assert reviewed.status_code == 200, reviewed.text
+        assert reviewed.json()["category"] == "insufficient_evidence"
+        assert reviewed.json()["verified_fraud"] is False
+        assert reviewed.json()["known_threat"] is False
+        assert len(sdk.models.calls) == 1
+
+
+def test_reassessment_rejects_fields_that_were_not_positive(gemini_settings):
+    sdk = FakeClient()
+    extractor = GeminiExtractor(api_key="dummy-key", model="gemini-test-model", client=sdk)
+    with TestClient(create_app(gemini_settings, extractor=extractor)) as client:
+        body = client.post("/v1/check", json={"content_type": "text", "text": TEXT}).json()
+        result = client.post(
+            "/v1/reassess",
+            json={
+                "input_kind": "text",
+                "observations": body["observations"],
+                "decisions": [{"field": "credentials_requested", "choice": "not_present"}],
+            },
+        )
+        assert_error(result, 422, "invalid_request")
+        assert len(sdk.models.calls) == 1
+
+
 @pytest.mark.parametrize("flag", [None, False])
 def test_nullable_model_flags_remain_distinct_from_false(gemini_settings, flag):
     payload = {
@@ -87,6 +139,7 @@ def test_nullable_model_flags_remain_distinct_from_false(gemini_settings, flag):
         "verification_code_requested": flag,
         "account_threat_indicated": flag,
         "urls_visible": [],
+        "visual_regions": [],
         "evidence_spans": [],
         "uncertainty_codes": ["external_verification_needed"],
     }

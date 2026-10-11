@@ -13,8 +13,8 @@ from dotenv import dotenv_values
 class Settings:
     fixture_mode: bool = True
     app_env: str = "development"
-    max_request_bytes: int = 6 * 1024 * 1024
-    max_image_bytes: int = 5 * 1024 * 1024
+    max_request_bytes: int = 9 * 1024 * 1024
+    max_image_bytes: int = 8 * 1024 * 1024
     max_image_pixels: int = 20_000_000
     max_image_dimension: int = 10_000
     gemini_api_key: str | None = field(default=None, repr=False)

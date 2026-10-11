@@ -66,13 +66,14 @@ public enum CheckSubmission: Sendable {
 }
 public protocol CheckServing: Sendable {
     func check(_ submission: CheckSubmission, source: CheckSource) async throws -> CheckResponse
+    func reassess(_ request: SignalReassessmentRequest) async throws -> Assessment
 }
 
 public struct CheckClient: CheckServing {
     public static let maxTextScalars = 10_000
     public static let maxURLScalars = 2_048
-    public static let maxImageBytes = 5 * 1024 * 1024
-    public static let maxRequestBytes = 6 * 1024 * 1024
+    public static let maxImageBytes = 8 * 1024 * 1024
+    public static let maxRequestBytes = 9 * 1024 * 1024
     public static let maxResponseBytes = 512 * 1024
     private let configuration: BackendConfiguration
     private let protocolClasses: [AnyClass]?
@@ -84,11 +85,35 @@ public struct CheckClient: CheckServing {
     }
     public func check(_ submission: CheckSubmission, source: CheckSource = .iosApp) async throws -> CheckResponse {
         let request = try makeRequest(submission, source: source)
-        let operation = BoundedRequest(configuration: configuration, protocolClasses: protocolClasses)
+        let operation = BoundedRequest<CheckResponse>(configuration: configuration, protocolClasses: protocolClasses)
         return try await withTaskCancellationHandler {
             if Task.isCancelled { throw CheckError.cancelled }
             return try await operation.perform(request)
         } onCancel: { operation.cancel() }
+    }
+    public func reassess(_ requestBody: SignalReassessmentRequest) async throws -> Assessment {
+        let request = try makeReassessmentRequest(requestBody)
+        let operation = BoundedRequest<Assessment>(configuration: configuration, protocolClasses: protocolClasses)
+        return try await withTaskCancellationHandler {
+            if Task.isCancelled { throw CheckError.cancelled }
+            return try await operation.perform(request)
+        } onCancel: { operation.cancel() }
+    }
+    private func makeReassessmentRequest(_ body: SignalReassessmentRequest) throws -> URLRequest {
+        guard ["text", "image"].contains(body.inputKind),
+              !body.decisions.isEmpty, body.decisions.count <= 5 else {
+            throw CheckError.invalidResponse
+        }
+        var request = URLRequest(url: configuration.baseURL.appendingPathComponent("v1/reassess"),
+                                 cachePolicy: .reloadIgnoringLocalCacheData,
+                                 timeoutInterval: configuration.timeoutSeconds)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpShouldHandleCookies = false
+        request.httpBody = try JSONEncoder().encode(body)
+        guard (request.httpBody?.count ?? 0) <= 32 * 1024 else { throw CheckError.tooLarge }
+        return request
     }
     func makeRequest(_ submission: CheckSubmission, source: CheckSource) throws -> URLRequest {
         var request = URLRequest(url: configuration.baseURL.appendingPathComponent("v1/check"),

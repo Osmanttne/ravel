@@ -41,6 +41,7 @@ def output_for(**flags):
         "verification_code_requested": None,
         "account_threat_indicated": None,
         "urls_visible": [],
+        "visual_regions": [],
         "evidence_spans": [],
         "uncertainty_codes": ["external_verification_needed"],
         **flags,

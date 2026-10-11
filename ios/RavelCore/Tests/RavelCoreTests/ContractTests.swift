@@ -61,6 +61,28 @@ final class ContractTests: XCTestCase {
         }
     }
 
+    func testApproximateVisualRegionsDecodeAndValidateAgainstExtractedSignals() throws {
+        var object = try fixtureObject("gemini-image")
+        var observations = object["observations"] as! [String: Any]
+        observations["visual_regions"] = [[
+            "field": "payment_requested",
+            "box_2d": [100, 120, 260, 780]
+        ]]
+        object["observations"] = observations
+        let response = try decode(object)
+        XCTAssertEqual(response.observations?.visualRegions.first?.field, .paymentRequested)
+        XCTAssertEqual(response.observations?.visualRegions.first?.box2D, [100, 120, 260, 780])
+        let roundtrip = try JSONDecoder().decode(CheckResponse.self, from: JSONEncoder().encode(response))
+        XCTAssertEqual(roundtrip.observations?.visualRegions.first?.box2D, [100, 120, 260, 780])
+
+        observations["visual_regions"] = [[
+            "field": "payment_requested",
+            "box_2d": [100, 900, 260, 200]
+        ]]
+        object["observations"] = observations
+        XCTAssertThrowsError(try decode(object))
+    }
+
     func testNewObservationFlagsPreserveTrueFalseAndUnknownOnRoundtrip() throws {
         for value in [true as Any, false as Any, NSNull()] {
             var object = try fixtureObject("gemini-text")

@@ -23,7 +23,7 @@ Private checks and reports are separate code paths. `/v1/check` does not call re
 
 ## Input handling and retention
 
-The request guard bounds complete bodies at 6 MiB, including chunked bodies and multipart overhead, before parsing. Images are separately limited to 5 MiB, 20 million pixels, and 10,000 pixels per dimension. Only PNG and JPEG are accepted and decoded; declared MIME type alone is insufficient. Images are stripped of embedded metadata and re-encoded before inline Gemini submission. Uploads are data and are never executed.
+The request guard bounds complete bodies at 9 MiB, including chunked bodies and multipart overhead, before parsing. Images are separately limited to 8 MiB, 20 million pixels, and 10,000 pixels per dimension. Only PNG and JPEG are accepted and decoded; declared MIME type alone is insufficient. Images are stripped of embedded metadata and re-encoded before inline Gemini submission. Uploads are data and are never executed.
 
 Gemini instructions treat content as untrusted data, request a schema rather than a verdict, and enable no tools, URL fetching, or search. Strict typed output and evidence validation reject unsupported or malformed observations. Mocked tests verify these controls at the integration boundary; they cannot prove how a real model responds to every injected instruction.
 

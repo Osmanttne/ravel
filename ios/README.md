@@ -47,8 +47,8 @@ report submission, or opening of suspicious destinations. Credentials stay in
 the backend's `.env`; never put a Gemini key in iOS settings or plists.
 
 Image preparation bounds source size and pixels, downsamples to a maximum
-2,000-pixel edge, and renders new PNG/JPEG pixels without copying source metadata.
-Uploads are at most 5 MiB. The source supports PNG, JPEG, and single-frame HEIC/HEIF.
+3,072-pixel edge, and renders new PNG/JPEG pixels without copying source metadata.
+Uploads are at most 8 MiB. The source supports PNG, JPEG, and single-frame HEIC/HEIF.
 Provider temporary files are processed during their callback before expiration.
 The extension requires a file representation for images; data-only image hosts
 receive the manual fallback rather than an unbounded in-memory load.

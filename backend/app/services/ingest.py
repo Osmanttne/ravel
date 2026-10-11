@@ -34,7 +34,7 @@ def validate_image(
     data: bytes,
     declared_type: str,
     *,
-    max_bytes: int = 5 * 1024 * 1024,
+    max_bytes: int = 8 * 1024 * 1024,
     max_pixels: int = 20_000_000,
     max_dimension: int = 10_000,
 ) -> ImagePayload:

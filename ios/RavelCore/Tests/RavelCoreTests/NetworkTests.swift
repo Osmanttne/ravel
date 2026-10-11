@@ -23,6 +23,34 @@ final class NetworkTests: XCTestCase {
         XCTAssertEqual(MockURLProtocol.state.requestCount, 1)
     }
 
+    func testReviewPostsOnlySanitizedObservationsAndDecodesTheUpdatedAssessment() async throws {
+        let check = try JSONDecoder().decode(CheckResponse.self, from: fixture("gemini-image"))
+        let expected = try JSONEncoder().encode(check.assessment)
+        MockURLProtocol.state.set { stub in
+            XCTAssertEqual(stub.request.url?.absoluteString, "https://backend.example/v1/reassess")
+            XCTAssertEqual(stub.request.httpMethod, "POST")
+            XCTAssertNil(stub.request.value(forHTTPHeaderField: "Cookie"))
+            let body = try! XCTUnwrap(requestBody(stub.request))
+            let object = try! XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
+            XCTAssertEqual(object["input_kind"] as? String, "image")
+            XCTAssertNil(object["text"])
+            XCTAssertNil(object["image"])
+            let decisions = object["decisions"] as? [[String: String]]
+            XCTAssertEqual(decisions?.first?["field"], "payment_requested")
+            XCTAssertEqual(decisions?.first?["choice"], "not_present")
+            stub.respond(expected)
+        }
+        let request = SignalReassessmentRequest(
+            inputKind: "image",
+            observations: try XCTUnwrap(check.observations),
+            decisions: [SignalReviewDecision(field: .paymentRequested, choice: .notPresent)]
+        )
+        let result = try await client().reassess(request)
+        XCTAssertEqual(result.category, check.assessment.category)
+        XCTAssertFalse(result.verifiedFraud)
+        XCTAssertEqual(MockURLProtocol.state.requestCount, 1)
+    }
+
     func testProviderAndValidationErrorsUseFixedMessagesWithoutServerSecrets() async throws {
         let mappings: [(String, CheckError, Int)] = [
             ("provider_timeout", .timeout, 504), ("provider_invalid_output", .providerInvalidOutput, 502),
@@ -76,7 +104,7 @@ final class NetworkTests: XCTestCase {
         XCTAssertEqual(MockURLProtocol.state.requestCount, 1)
         // Exercise the redirect callback too; the completion must refuse a new URLRequest.
         let configuration = try BackendConfiguration(baseURL: URL(string: "https://backend.example")!)
-        let operation = BoundedRequest(configuration: configuration, protocolClasses: nil)
+        let operation = BoundedRequest<CheckResponse>(configuration: configuration, protocolClasses: nil)
         let session = URLSession(configuration: .ephemeral)
         defer { session.invalidateAndCancel() }
         let task = session.dataTask(with: URL(string: "https://backend.example/v1/check")!)
@@ -157,4 +185,21 @@ private func assertAsyncError<T>(_ expected: CheckError, file: StaticString = #f
                                  _ operation: () async throws -> T) async {
     do { _ = try await operation(); XCTFail("Expected \(expected)", file: file, line: line) }
     catch { XCTAssertEqual(error as? CheckError, expected, file: file, line: line) }
+}
+
+private func requestBody(_ request: URLRequest) -> Data? {
+    if let body = request.httpBody { return body }
+    guard let stream = request.httpBodyStream else { return nil }
+    stream.open()
+    defer { stream.close() }
+    var result = Data()
+    var buffer = [UInt8](repeating: 0, count: 4096)
+    while stream.hasBytesAvailable {
+        let count = buffer.withUnsafeMutableBufferPointer { pointer in
+            stream.read(pointer.baseAddress!, maxLength: pointer.count)
+        }
+        if count <= 0 { break }
+        result.append(contentsOf: buffer.prefix(count))
+    }
+    return result
 }

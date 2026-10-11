@@ -63,7 +63,13 @@ struct CheckHomeView: View {
         }) {
             NavigationStack {
                 if let response = model.response {
-                    RavelResultView(response: response, isURLOnly: model.inputKind == .url)
+                    RavelResultView(
+                        response: response,
+                        isURLOnly: model.inputKind == .url,
+                        imageData: model.inputKind == .image ? model.preparedImage?.data : nil,
+                        reviewInputKind: model.inputKind == .image ? "image" : model.inputKind == .text ? "text" : nil,
+                        onReview: { decisions in try await model.reassess(decisions) }
+                    )
                         .toolbar {
                             ToolbarItem(placement: .topBarTrailing) {
                                 Button("Done") { model.isShowingResult = false }

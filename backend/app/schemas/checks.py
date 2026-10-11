@@ -3,7 +3,15 @@
 from enum import StrEnum
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, TypeAdapter
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    StringConstraints,
+    TypeAdapter,
+    field_validator,
+    model_validator,
+)
 
 
 class StrictModel(BaseModel):
@@ -91,6 +99,30 @@ class EvidenceSpan(StrictModel):
     text: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=500)]
 
 
+VisualSignal = Literal[
+    "payment_requested",
+    "urgency_indicated",
+    "credentials_requested",
+    "verification_code_requested",
+    "account_threat_indicated",
+]
+
+
+class VisualRegion(StrictModel):
+    """Approximate Gemini box in normalized [ymin, xmin, ymax, xmax] coordinates."""
+
+    field: VisualSignal
+    box_2d: list[Annotated[int, Field(ge=0, le=1000)]] = Field(min_length=4, max_length=4)
+
+    @field_validator("box_2d")
+    @classmethod
+    def positive_area(cls, value: list[int]) -> list[int]:
+        top, left, bottom, right = value
+        if top >= bottom or left >= right:
+            raise ValueError("Visual region must have positive area.")
+        return value
+
+
 class Extraction(StrictModel):
     """Provider observations, never a provider verdict or proof of fraud."""
 
@@ -106,6 +138,7 @@ class Extraction(StrictModel):
         default_factory=list, max_length=20
     )
     evidence_spans: list[EvidenceSpan] = Field(default_factory=list, max_length=20)
+    visual_regions: list[VisualRegion] = Field(default_factory=list, max_length=12)
     uncertainty_codes: list[UncertaintyCode] = Field(default_factory=list, max_length=6)
     claims: list[Annotated[str, StringConstraints(max_length=500)]] = Field(
         default_factory=list, max_length=20
@@ -162,12 +195,50 @@ class PublicObservations(StrictModel):
     credentials_requested: bool | None = None
     verification_code_requested: bool | None = None
     account_threat_indicated: bool | None = None
+    visual_regions: list[VisualRegion] = Field(default_factory=list, max_length=12)
     destinations: list[Annotated[str, StringConstraints(min_length=1, max_length=2_048)]] = Field(
         default_factory=list, max_length=20
     )
     evidence_source: Literal["fixture_provider", "gemini", "not_analyzed"] = "not_analyzed"
     verification_level: Literal["unverified_inference", "not_assessed"] = "not_assessed"
     uncertainty_codes: list[UncertaintyCode] = Field(default_factory=list, max_length=6)
+
+    @model_validator(mode="after")
+    def visual_regions_match_observations(self):
+        if self.visual_regions:
+            if self.evidence_source != "gemini" or self.verification_level != "unverified_inference":
+                raise ValueError("Visual regions require Gemini observations.")
+            positive_fields = {
+                "payment_requested": self.payment_requested,
+                "urgency_indicated": self.urgency_indicated,
+                "credentials_requested": self.credentials_requested,
+                "verification_code_requested": self.verification_code_requested,
+                "account_threat_indicated": self.account_threat_indicated,
+            }
+            if any(positive_fields[region.field] is not True for region in self.visual_regions):
+                raise ValueError("Visual regions must match positive observations.")
+        return self
+
+
+ReviewableSignal = Literal[
+    "payment_requested",
+    "urgency_indicated",
+    "credentials_requested",
+    "verification_code_requested",
+    "account_threat_indicated",
+]
+ReviewChoice = Literal["confirm", "not_present", "unclear"]
+
+
+class SignalReviewDecision(StrictModel):
+    field: ReviewableSignal
+    choice: ReviewChoice
+
+
+class ReassessmentRequest(StrictModel):
+    input_kind: Literal["text", "image"]
+    observations: PublicObservations
+    decisions: list[SignalReviewDecision] = Field(min_length=1, max_length=5)
 
 
 # Both names describe the same stable public contract.

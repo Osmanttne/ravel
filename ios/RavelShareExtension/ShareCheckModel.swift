@@ -254,6 +254,22 @@ final class ShareCheckModel: ObservableObject {
         message = "The check was cancelled. You can start a new private check."
     }
 
+    func reassess(_ decisions: [SignalReviewDecision]) async throws -> Assessment {
+        guard let service, let response, response.mode == .gemini,
+              let observations = response.observations, let content, !decisions.isEmpty else {
+            throw CheckError.invalidResponse
+        }
+        let kind: String
+        switch content {
+        case .image: kind = "image"
+        case .text: kind = "text"
+        case .url: throw CheckError.invalidResponse
+        }
+        return try await service.reassess(
+            SignalReassessmentRequest(inputKind: kind, observations: observations, decisions: decisions)
+        )
+    }
+
     func stopForBackground() {
         guard !closed, phase == .loadingItem || phase == .analyzing else { return }
         let wasLoading = phase == .loadingItem

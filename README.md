@@ -98,7 +98,11 @@ These tests use fixtures and synthetic inputs; they do not replace live provider
 
 ## Credits
 
-Core integrations: **Apple SwiftUI and Share Extension**, **Google Gemini API** through the Google Gen AI Python SDK, and **Photon Spectrum** for the iMessage agent. The backend uses FastAPI and Pydantic; the Photon agent uses Node.js, TypeScript, and Zod. The iOS project is generated with XcodeGen. **Tiger Data is not integrated** in this build. See the [presentation-ready credits list](docs/credits.md).
+Core integrations: **Apple SwiftUI and Share Extension**, **Google Gemini API** through the Google Gen AI Python SDK, and **Photon Spectrum** for the iMessage agent. The backend uses FastAPI and Pydantic; the Photon agent uses Node.js, TypeScript, and Zod. The iOS project is generated with XcodeGen. **Tiger Data is not integrated** in this build.
+
+Development tools: AI-assisted development with **OpenAI Codex**. Presentation visuals made with **Claude Design**.
+
+See the [presentation-ready credits list](docs/credits.md).
 
 ## Project notes
 

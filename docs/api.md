@@ -54,7 +54,7 @@ Multipart fields:
 | `privacy_mode` | `private_check` |
 | `context` | Optional text, at most 2,000 characters |
 
-Limits are 5 MiB per image, 6 MiB for the entire request including multipart overhead, 20 million decoded pixels, and 10,000 pixels per dimension. HEIC and other image types are not supported. A filename does not authorize access to a local path, select a fixture, or override validation. Fixture replay recognizes bundled synthetic image contents; arbitrary images do not receive invented screenshot observations. Optional context is safety-validated but is not analyzed by the fixture image adapter. In Gemini mode, metadata-stripped, re-encoded images and accompanying context are sent inline to Google; the Files API is not used.
+Limits are 8 MiB per image, 9 MiB for the entire request including multipart overhead, 20 million decoded pixels, and 10,000 pixels per dimension. HEIC and other image types are not supported by the API. A filename does not authorize access to a local path, select a fixture, or override validation. Fixture replay recognizes bundled synthetic image contents; arbitrary images do not receive invented screenshot observations. Optional context is safety-validated but is not analyzed by the fixture image adapter. In Gemini mode, metadata-stripped, re-encoded images and accompanying context are sent inline to Google; the Files API is not used.
 
 Response shape:
 
@@ -104,6 +104,7 @@ Indicators separate provenance from verification. Fixture text observations use 
   "credentials_requested": null,
   "verification_code_requested": null,
   "account_threat_indicated": null,
+  "visual_regions": [],
   "destinations": ["https://tickets.example"],
   "evidence_source": "gemini",
   "verification_level": "unverified_inference",
@@ -133,6 +134,36 @@ presence alone is not proof of fraud. URL-only checks leave all three fields
 and cannot alter private-check, fraud, threat, or community-report guarantees.
 
 Uncertainty codes are controlled values: `identity_unverified`, `ticket_ownership_unverified`, `content_unclear`, `incomplete_content`, `conflicting_evidence`, and `external_verification_needed`. Internal evidence quotes support output validation but never appear in the response. Raw model claims, free-form model uncertainty text, URL paths/query tokens, and extracted identities are not returned.
+
+Screenshot observations may include up to 12 `visual_regions`. Each region has
+a `field` matching an affirmative signal and `box_2d` coordinates in normalized
+`[ymin, xmin, ymax, xmax]` order from 0 to 1000. These are approximate Gemini
+image pointers, not verified evidence, and can be misplaced. Text checks return
+an empty list. The app overlays boxes on the locally held screenshot and lets
+the user confirm, reject, or mark each extracted signal as unclear.
+
+## `POST /v1/reassess`
+
+Recomputes the existing deterministic assessment after an explicit user review.
+The client sends sanitized Gemini observations and one or more decisions:
+
+```json
+{
+  "input_kind": "image",
+  "observations": {
+    "payment_requested": true,
+    "evidence_source": "gemini",
+    "verification_level": "unverified_inference"
+  },
+  "decisions": [{ "field": "payment_requested", "choice": "not_present" }]
+}
+```
+
+`field` must be a currently positive supported signal. `choice` is `confirm`,
+`not_present`, or `unclear`. The endpoint performs no Gemini call, accepts no
+raw screenshot or message, writes no state, and creates no report. Its response
+is an `Assessment` produced by the same conservative policy; it does not
+independently verify the model observation or establish safety.
 
 ## `POST /v1/reports`
 

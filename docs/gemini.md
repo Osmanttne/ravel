@@ -39,13 +39,21 @@ thinking documentation](https://ai.google.dev/gemini-api/docs/generate-content/t
 
 The adapter uses `google-genai` 2.29.0 and a stateless `client.models.generate_content` request. It uses a bounded inline image part, not the Files API, and does not create a chat or server-side conversation. The application closes its owned client at lifespan shutdown. The SDK documents generation, inline content, typed configuration, and explicit client cleanup. [Official Python SDK documentation](https://googleapis.github.io/python-genai/).
 
-Connected text checks send the selected text. Connected image checks send a decoded, metadata-stripped, re-encoded image plus optional selected context. The adapter honors image orientation, composites transparency onto white, prefers PNG for PNG screenshots, and can fall back to JPEG compression to fit the 5 MiB inline limit. Re-encoding removes embedded metadata; any visible private text remains in the submitted image. Google processes these inputs under its applicable provider terms. The application's ephemeral processing and client cleanup do not guarantee zero Google retention.
+Connected text checks send the selected text. Connected image checks send a decoded, metadata-stripped, re-encoded image plus optional selected context. The iOS client preserves screenshots up to 3,072 pixels on the longest edge and 8 MiB, then the adapter honors image orientation, composites transparency onto white, prefers PNG for PNG screenshots, and can fall back to JPEG compression to fit the 8 MiB inline limit. Gemini 3 models receive the high media-resolution setting for screenshot text. Re-encoding removes embedded metadata; any visible private text remains in the submitted image. Google processes these inputs under its applicable provider terms. The application's ephemeral processing and client cleanup do not guarantee zero Google retention.
 
 The adapter targets the Google Gemini Developer API explicitly. Redirects, automatic environment proxy/provider overrides, and SDK record/replay modes are disabled. A supplied test client remains owned by its caller; only a client created by the adapter is closed during application shutdown.
 
 URL-only checks are local parsing in both modes: no Google call, no DNS resolution, and no destination fetch. A URL response can have `mode: "gemini"` because that is the configured mode while its observations remain `not_analyzed` / `not_assessed`.
 
 The model is asked for typed observations about category, payment request/reason, urgency, secrecy, credential/code sharing, account-access threats, visible URLs, supporting evidence, and controlled uncertainty codes. The request declares JSON output and a schema; server-side strict parsing/validation still checks the response. Schema-constrained generation alone does not establish factual accuracy. [Official structured-output documentation](https://ai.google.dev/gemini-api/docs/structured-output).
+
+For screenshot input, Gemini may also return up to 12 approximate normalized
+regions linked to supported positive signals. Ravel draws these boxes over the
+same prepared screenshot in the app and Share Extension. Users can confirm,
+reject, or mark a signal unclear; Ravel sends only sanitized observations and
+those choices to `/v1/reassess`, which runs the existing deterministic policy
+without calling Gemini again or saving a report. Regions can be misplaced and
+do not verify that a message's claims are true.
 
 Every affirmative boolean, payment reason, and visible URL must have supporting evidence. For text input, quoted evidence and URLs must occur in the submitted text. Image quotes cannot be independently matched to pixels without a separate OCR/verification system; they remain model inferences. The parser rejects oversized output, incomplete generation, extra fields, non-JSON/tool output, and unsafe model-supplied URLs.
 

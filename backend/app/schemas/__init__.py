@@ -16,10 +16,12 @@ from app.schemas.checks import (
     ObservationResponse,
     PaymentReason,
     PublicObservations,
+    ReassessmentRequest,
     SourceChannel,
     TextCheckRequest,
     UncertaintyCode,
     URLCheckRequest,
+    VisualRegion,
 )
 from app.schemas.reports import (
     ConfirmedReportFields,
@@ -44,10 +46,12 @@ __all__ = [
     "ObservationResponse",
     "PaymentReason",
     "PublicObservations",
+    "ReassessmentRequest",
     "ReportRequest",
     "ReportResponse",
     "SourceChannel",
     "TextCheckRequest",
     "URLCheckRequest",
+    "VisualRegion",
     "UncertaintyCode",
 ]

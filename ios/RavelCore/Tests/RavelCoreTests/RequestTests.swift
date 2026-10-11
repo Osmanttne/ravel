@@ -77,7 +77,7 @@ final class RequestTests: XCTestCase {
 
     func testSessionHasNoCookieCacheCredentialOrPersistentStore() throws {
         let configuration = try BackendConfiguration(baseURL: URL(string: "https://backend.example")!)
-        let options = BoundedRequest.sessionConfiguration(configuration)
+        let options = BoundedRequest<CheckResponse>.sessionConfiguration(configuration)
         XCTAssertNil(options.identifier)
         XCTAssertNil(options.httpCookieStorage)
         XCTAssertNil(options.urlCredentialStorage)

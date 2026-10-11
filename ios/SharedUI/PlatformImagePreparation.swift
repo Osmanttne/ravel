@@ -36,8 +36,8 @@ public enum ImagePreparationError: Error, LocalizedError, Sendable {
 /// Stateless preparation can run on a background task or inside an item-provider callback.
 public enum PlatformImagePreparation {
     public static let maximumSourceBytes = 20 * 1_024 * 1_024
-    public static let maximumOutputBytes = 5 * 1_024 * 1_024
-    public static let maximumOutputDimension = 2_000
+    public static let maximumOutputBytes = 8 * 1_024 * 1_024
+    public static let maximumOutputDimension = 3_072
     private static let maximumSourcePixels = 64_000_000
 
     /// Call this before a provider's temporary URL expires; the returned value owns its bytes.
@@ -126,7 +126,7 @@ public enum PlatformImagePreparation {
             return PreparedImage(data: png, mimeType: "image/png",
                                  pixelWidth: cleanImage.width, pixelHeight: cleanImage.height)
         }
-        for quality in [0.9, 0.75, 0.6] {
+        for quality in [0.95, 0.9, 0.75, 0.6] {
             try Task.checkCancellation()
             if let jpeg = encode(cleanImage, type: .jpeg, quality: quality),
                jpeg.count <= maximumOutputBytes {

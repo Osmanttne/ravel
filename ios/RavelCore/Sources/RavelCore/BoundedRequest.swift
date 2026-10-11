@@ -1,11 +1,11 @@
 import Foundation
 
 /// A fresh ephemeral session per check. Locking covers cancellation races; delegate callbacks are serial.
-final class BoundedRequest: NSObject, URLSessionDataDelegate, @unchecked Sendable {
+final class BoundedRequest<Response: Decodable>: NSObject, URLSessionDataDelegate, @unchecked Sendable {
     private let configuration: BackendConfiguration
     private let protocolClasses: [AnyClass]?
     private let lock = NSLock()
-    private var continuation: CheckedContinuation<CheckResponse, Error>?
+    private var continuation: CheckedContinuation<Response, Error>?
     private var session: URLSession?
     private var task: URLSessionDataTask?
     private var body = Data()
@@ -14,7 +14,7 @@ final class BoundedRequest: NSObject, URLSessionDataDelegate, @unchecked Sendabl
     init(configuration: BackendConfiguration, protocolClasses: [AnyClass]?) {
         self.configuration = configuration; self.protocolClasses = protocolClasses
     }
-    func perform(_ request: URLRequest) async throws -> CheckResponse {
+    func perform(_ request: URLRequest) async throws -> Response {
         try await withCheckedThrowingContinuation { continuation in
             lock.lock()
             guard !finished else { lock.unlock(); continuation.resume(throwing: CheckError.cancelled); return }
@@ -40,7 +40,7 @@ final class BoundedRequest: NSObject, URLSessionDataDelegate, @unchecked Sendabl
         return options
     }
     func cancel() { finish(.failure(CheckError.cancelled)) }
-    private func finish(_ result: Result<CheckResponse, Error>) {
+    private func finish(_ result: Result<Response, Error>) {
         lock.lock()
         guard !finished else { lock.unlock(); return }
         finished = true
@@ -85,7 +85,7 @@ final class BoundedRequest: NSObject, URLSessionDataDelegate, @unchecked Sendabl
         guard !finished else { return }
         guard let response else { finish(.failure(CheckError.invalidResponse)); return }
         if response.statusCode == 200 {
-            do { finish(.success(try JSONDecoder().decode(CheckResponse.self, from: data))) }
+            do { finish(.success(try JSONDecoder().decode(Response.self, from: data))) }
             catch { finish(.failure(CheckError.invalidResponse)) }
         } else {
             let code = (try? JSONDecoder().decode(ErrorEnvelope.self, from: data))?.error.code

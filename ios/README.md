@@ -6,14 +6,16 @@ current RavelCore suite passes 20 tests. Updated unsigned and signed app/extensi
 builds pass, and the signed coverage build is installed on the physical iPhone.
 Earlier rebrand test-host builds and RavelTests `build-for-testing` compilation
 also pass. Built plists verify the Ravel display name, new bundle IDs, and the
-Debug LAN Gemini backend address on port 8001. Manual runtime acceptance of the
-updated coverage remains pending.
+Debug LAN Gemini backend address on port 8001. The user has confirmed private
+Gemini results from both the app picker and Photos Share Extension using
+synthetic screenshots; see the [device acceptance proof](../docs/artifacts/ios-gemini-share-acceptance.json).
 
 The initial installation reached Apple's free-profile three-app limit. The
 user approved removing the old UI test runner; removal succeeded, and signed
 Ravel installed and launched successfully on the physical iPhone. The embedded
-extension is built and signed; runtime Share-flow acceptance, new device UI
-tests, and renewed provider analysis remain pending. Before the rename, the
+extension is built and signed; the Photos Share flow now has a confirmed result.
+New device UI tests and direct text/URL sharing from the test host remain
+pending. Before the rename, the
 user confirmed a successful Gemini image assessment and Share menu availability;
 those results validate the previous app identity.
 Milestone 3 remains in progress. Use only the physical iPhone; all test
@@ -101,7 +103,9 @@ Debug address to the Mac's private LAN IP and bind a development server to that
 interface. The renamed built plists point to the LAN Gemini server on port 8001.
 After restarting from the renamed repository, Gemini on port 8001 and fixture
 mode on port 8002 pass health checks over localhost and LAN. Ravel is installed
-and launched; renewed handset analysis remains pending. Open the containing app
+and launched. The latest device check completed through Photos Share after the
+local model was changed to `gemini-3.5-flash-lite`; the earlier configured model
+returned `RESOURCE_EXHAUSTED` on a harmless diagnostic. Open the containing app
 first and make an explicit private check to grant any Local Network prompt
 before trying the extension. Apple documents different permission behavior
 for extensions: [Local Network privacy](https://developer.apple.com/documentation/technotes/tn3179-understanding-local-network-privacy).
@@ -131,9 +135,10 @@ destination or call Gemini. Read [Gemini data handling](../docs/gemini.md).
 The account-secret extension's current RavelCore suite passes 20 tests, including
 the additive nullable fields and older-response compatibility. Updated unsigned
 generic-iOS app and embedded-extension builds also pass. The latest coverage
-build is signed and installed on the physical phone; manual analysis and Photos
-Share acceptance remain pending. Builds/installation do not complete runtime
-acceptance; no simulator is running.
+build is signed and installed on the physical phone. The user confirmed a
+private Gemini analysis from Photos Share with a synthetic credential-request
+screenshot; it returned `suspicious_verify` and created no report. Builds alone
+do not complete runtime acceptance; no simulator is running.
 
 During the rebrand, RavelCore's 17 XCTest methods passed with Xcode 26.6. They covered sanitized
 backend responses, wire formats, limits, privacy flags, cancellation, bounded
@@ -169,8 +174,10 @@ manual picker by explicitly selecting a synthetic screenshot yourself.
 RavelShareTestHost's **View synthetic screenshot** presents invented content you can
 capture using the iPhone's screenshot buttons. Select that screenshot in Photos
 for **Share → Ravel**, and select it again with the app's **Check screenshot**.
-The installed Ravel app is configured for Gemini. Renewed handset analysis and
-Share-flow acceptance remain pending. Keep automated UI acceptance on a
+The installed Ravel app is configured for Gemini. The user has now confirmed
+the Photos Share flow and a separate picker check on the updated app; the result
+and model-quota recovery are recorded in the [device proof](../docs/artifacts/ios-gemini-share-acceptance.json).
+Keep automated UI acceptance on a
 separate fixture backend using a command-line `RAVEL_API_BASE_URL`
 override, then rebuild the normal Debug app to restore the saved Gemini address.
 Fixture mode intentionally gives unfamiliar images a limited assessment; it
@@ -179,8 +186,8 @@ does not run image understanding on arbitrary uploads.
 Fresh real Gemini text and image verification passed on 2026-10-10 at 21:56 UTC;
 both synthetic examples returned `suspicious_verify` and `report_created: false`.
 Before the rename, the user also confirmed a successful image assessment after one
-incomplete-extraction error and retry. The exact successful entry point remains
-to be confirmed. Incomplete provider output is rejected rather than used to
+incomplete-extraction error and retry. A later screenshot confirmed the exact
+Photos Share entry point on the updated app. Incomplete provider output is rejected rather than used to
 manufacture a result; the original Google timeout and later successful checks are
 recorded in the sanitized validation record.
 

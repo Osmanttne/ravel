@@ -1,6 +1,6 @@
 # Reviewed Ravel Photon demo
 
-The expanded Photon suite passes 420 offline tests. One controlled fixed synthetic
+The expanded Photon suite passes 423 offline tests. One controlled fixed synthetic
 text → Gemini → assessment-reply roundtrip was verified on the owner's phone:
 the exact input was received, the stream closed, one private backend check
 returned advance-fee/urgency evidence, and a separately approved reply received
@@ -17,8 +17,24 @@ helper.
 Milestone 5's bounded reviewed text-and-URL slice is complete. Milestone 6 covers
 expanded account-secret evidence, demo preparation, benign controls, failure
 handling, and a backup demonstration; it remains in progress.
-General accuracy, unattended operation, and Photon screenshot support
-are not established; automatic replies remain disabled.
+The bounded real-Gemini automatic reply path has passed two synthetic controls
+with handset confirmation: benign content returned insufficient evidence, and
+a code-request/account-threat message returned suspicious with verification
+guidance. Sanitized records: [benign](artifacts/photon-auto-reply-benign-control.json)
+and [suspicious](artifacts/photon-auto-reply-suspicious-control.json).
+General accuracy and Photon screenshot support are not established. For a live
+demo, use the bounded real-Gemini session below; it is not a canned response or
+a general unattended service.
+
+## Start the live reply session
+
+Start the backend in connected mode and confirm `/health` returns `mode: gemini`.
+Then, from `photon-agent/`, run `npm start -- --live --sender <owner's E.164>`.
+Use only the owner's own registered number, not the Photon **Texts on** number.
+The listener accepts only that sender's fresh direct messages and exits after
+30 minutes or 20 accepted messages. Keep the backend and listener running while
+the owner sends a synthetic test message. Ordinary text uses live Gemini;
+standalone links are local-only. Confirm the resulting reply on the handset.
 
 ## Preview the general review workflow
 
@@ -92,27 +108,30 @@ repository root, verify the ten fixture controls without provider requests:
 .venv/bin/python scripts/verify_gemini_coverage.py
 ```
 
-The fixture run passes 10/10. Explicit `--live` attempts nine Google generations
-(seven texts and two images), plus one URL-only check with zero provider or
-destination calls. The latest saved live run on 2026-10-11 completed all nine
-generations, but three controls did not meet their expected outcomes: the
-account-threat payment was described as an advance fee, and benign code delivery
-and ordinary sign-in requested human review. The assessment now treats payments
-paired with account threats as generic payment requests, even if Gemini supplies
-an advance-fee reason. The benign text cases still need a successful live rerun;
-do not report the saved run as a pass. Separate sanitized artifacts are
+The fixture run passes 10/10. The latest live run on 2026-10-11 passed all ten
+synthetic controls using nine Gemini generations and one local-only URL check.
+It made no Photon sends, destination requests, or provider retries. The successful
+run follows a deterministic policy correction: payments paired with account
+threats remain generic payment requests even if Gemini supplies an advance-fee
+reason. Separate sanitized artifacts are
 `docs/artifacts/gemini-coverage-fixture.json` and
 `docs/artifacts/gemini-coverage-live.json`. These limited controls cannot establish
 general fraud accuracy; see [field definitions](api.md) and [verification](gemini.md).
 
-For device acceptance, deliberately select a synthetic credential-request and
-benign-code screenshot through the iPhone picker/Photos Share flow. The updated
-app/extension builds unsigned and signed, and is installed; manual runtime and
-Photos acceptance remain pending. For the Photon benign control, start a new ready-user receive
-window, inspect the actual preview, obtain fresh exact-reply approval, send once,
-and separately confirm handset receipt. That live control is still pending.
-Show an offline provider failure as a truthful error, and record a backup of the
-reviewed demonstration; both presentation checks remain pending.
+Device acceptance passed on 2026-10-10 using synthetic screenshots on the physical
+iPhone: the containing-app picker returned `insufficient_evidence` for the benign
+control, and **Photos → Share → Ravel** returned `suspicious_verify` for the
+credential-request control. The latter showed Gemini mode, unverified
+observations, and private-check/no-report status. The sanitized result is in
+`docs/artifacts/ios-gemini-share-acceptance.json`. A live benign Photon control
+also completed with exact-reply approval and confirmed handset receipt; see
+`docs/artifacts/photon-benign-control-round-trip.json`. The offline failure demo
+passed using `npm --prefix photon-agent run demo`; it simulated a provider timeout
+without network calls. The backup recording remains pending; see the
+[sanitized run record](docs/artifacts/offline-failure-demo.json).
+`npm --prefix photon-agent run demo` now includes a clearly labeled simulated
+provider timeout and the truthful fixed error reply without making a network
+request. Recording a backup of the reviewed demonstration remains pending.
 
 ## Review and approve the actual reply
 
@@ -136,7 +155,7 @@ send without opening a listener.
 
 Confirm provider acknowledgement and then handset receipt separately. Neither a
 heartbeat nor an accepted outbound test validates a new general assessment flow.
-Record received input type, backend provenance/private flags, exact reply approval,
-and handset confirmation as separate sanitized evidence. Every later send needs
-fresh approval; keep automatic replies disabled. Do not publish phone numbers,
+Record received input type, backend provenance/private flags, and handset
+confirmation as separate sanitized evidence. Keep the automatic session limited
+to the owner and its time/message bounds. Do not publish phone numbers,
 credentials, message identifiers, or raw user input in shared proof artifacts.

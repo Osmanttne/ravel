@@ -1,0 +1,12 @@
+{
+  "observed_on": "2026-10-10",
+  "command": "npm --prefix photon-agent run demo",
+  "status": "passed",
+  "mode": "offline_synthetic_fixture",
+  "simulated_failure": "provider_timeout",
+  "user_facing_reply": "The check timed out. Please retry.",
+  "photon_sends": 0,
+  "backend_requests": 0,
+  "gemini_requests": 0,
+  "destination_requests": 0
+}

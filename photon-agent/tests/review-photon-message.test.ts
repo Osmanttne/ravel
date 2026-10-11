@@ -132,7 +132,7 @@ test("only an entire trimmed complete HTTP(S) link becomes a URL submission", as
   assert.deepEqual(result.submissions, [{ content_type: "url", url: PRIVATE_URL }]);
   assert.equal(result.result.input_kind, "url");
   assert.equal(result.result.reply, prefix + formatAssessment(urlResponse("gemini"), { content_type: "url", url: PRIVATE_URL }));
-  assert.match(result.result.reply, /this link was not analyzed by AI/);
+  assert.match(result.result.reply, /The link was parsed locally/);
   assert.match(result.result.reply, /destination was not visited/);
   assert.doesNotMatch(result.output.join(""), /private-query-token|private-fragment|tickets\.example/);
 });
@@ -323,7 +323,7 @@ test("uncertain valid Gemini results preserve uncertainty and unknown observatio
   assert.equal(result.status, 0);
   assert.match(result.result.reply, /Needs human review/);
   assert.match(result.result.reply, /Missing evidence does not establish safety/);
-  assert.doesNotMatch(result.result.reply, /Suspicious —|safe message/i);
+  assert.doesNotMatch(result.result.reply, /Suspicious:|safe message/i);
 });
 
 const accountCases = [
@@ -348,7 +348,8 @@ for (const { flag, code, text, reason } of accountCases) {
     assert.equal(result.result.category, "suspicious_verify");
     assert.deepEqual(result.result.indicator_codes, [code]);
     assert.match(result.result.reply, reason);
-    assert.match(result.result.reply, /Gemini AI observations — unverified/);
+    assert.match(result.result.reply, /Gemini observations\.$/);
+    assert.doesNotMatch(result.result.reply, /unverified|—/i);
     assert.match(result.result.reply, /Open the official app yourself/);
     assert.equal(result.result.messages_sent, 0);
     assert.equal(result.result.reply_requires_user_approval, true);
@@ -377,7 +378,7 @@ test("fresh benign code notification stays insufficient and has no account-reque
   assert.equal(result.result.category, "insufficient_evidence");
   assert.deepEqual(result.result.indicator_codes, []);
   assert.match(result.result.reply, /No sufficiently supported tactic indicators/);
-  assert.doesNotMatch(result.result.reply, /A request to share|Suspicious —|091283/);
+  assert.doesNotMatch(result.result.reply, /A request to share|Suspicious:|091283/);
   assert.equal(result.result.messages_sent, 0);
 });
 
@@ -393,7 +394,7 @@ test("account threat plus urgency cannot promote the backend's insufficient cate
   assert.equal(result.status, 0);
   assert.equal(result.result.category, "insufficient_evidence");
   assert.match(result.result.reply, /Insufficient evidence/);
-  assert.doesNotMatch(result.result.reply, /Suspicious —/);
+  assert.doesNotMatch(result.result.reply, /Suspicious:/);
 });
 
 test("uncertainty remains review-first even with new tactic flags and indicators", async () => {
@@ -409,7 +410,7 @@ test("uncertainty remains review-first even with new tactic flags and indicators
   assert.equal(result.status, 0);
   assert.match(result.result.reply, /Needs human review/);
   assert.match(result.result.reply, /unclear or inconsistent/);
-  assert.doesNotMatch(result.result.reply, /A request to share|A claim that an account|Suspicious —/);
+  assert.doesNotMatch(result.result.reply, /A request to share|A claim that an account|Suspicious:/);
   assert.equal(result.result.messages_sent, 0);
 });
 
@@ -525,7 +526,7 @@ test("native standalone URL preview closes the actual receiver before one privat
   const preview = JSON.parse(output[0]!);
   assert.equal(preview.code, "reply_preview_ready");
   assert.equal(preview.reply, prefix + formatAssessment(response, { content_type: "url", url: PRIVATE_URL }));
-  assert.match(preview.reply, /link was not analyzed by AI/);
+  assert.match(preview.reply, /The link was parsed locally/);
   assert.equal(preview.input_kind, "url");
   assert.equal(preview.category, "insufficient_evidence");
   assert.deepEqual(preview.indicator_codes, []);

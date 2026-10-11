@@ -27,6 +27,16 @@ test("the SDK boundary maps a fresh explicit inbound DM without retaining the pr
   assert.notEqual(mapped.content, sdk.content);
 });
 
+test("live routing accepts only the configured sender in that sender's direct chat", () => {
+  const sender = "+12025550123";
+  const ownSpace = { id: `any;-;${sender}`, type: "dm" };
+  const ownMessage = cloudMessage({ sender: { address: sender } });
+  assert.ok(toIncomingEvent(ownSpace, ownMessage, STARTED_AT, NOW, sender));
+  assert.equal(toIncomingEvent(ownSpace, cloudMessage({ sender: { address: "+12025550124" } }), STARTED_AT, NOW, sender), undefined);
+  assert.equal(toIncomingEvent({ id: "any;-;+12025550124", type: "dm" }, ownMessage, STARTED_AT, NOW, sender), undefined);
+  assert.equal(toIncomingEvent(ownSpace, cloudMessage(), STARTED_AT, NOW, sender), undefined);
+});
+
 for (const [name, overrides] of [
   ["outbound", { direction: "outbound" }],
   ["unknown direction", { direction: undefined }],

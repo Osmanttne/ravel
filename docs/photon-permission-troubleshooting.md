@@ -13,6 +13,14 @@ current results without phone numbers or credentials.
 The [round-trip proof](artifacts/photon-gemini-round-trip.json) records the fresh
 incoming check and approved delivery separately from the earlier diagnostics.
 
+A separate benign account-safety control was received from the owner's assigned
+**Texts on** route with the registered phone handle. The first Gemini backend
+attempt returned `service_unavailable`; after the user approved one retry of the
+same synthetic text, the check returned `insufficient_evidence` with no supported
+indicators and no report. The user approved the exact reply, Photon acknowledged
+one logical send, and the user confirmed handset receipt. This single control is
+not a general accuracy claim. See the [sanitized proof](artifacts/photon-benign-control-round-trip.json).
+
 A standalone URL test identified a separate receiver-filter issue: iMessage
 sent complete URL text with its native link-preview marker. Sanitized diagnostics
 confirmed the selected owner's fresh normal direct message had no attachments,

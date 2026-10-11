@@ -1,0 +1,18 @@
+{
+  "recorded_at_utc": "2026-10-11T04:14:44Z",
+  "verification": "bounded_live_owner_only_photon_auto_reply_benign_control",
+  "synthetic_input_type": "benign_campus_schedule_text",
+  "raw_input_recorded": false,
+  "owner_sender_allowlist_enabled": true,
+  "backend_mode_confirmed": "gemini",
+  "reply_mode": "gemini",
+  "assessment_category": "insufficient_evidence",
+  "indicator_codes": [],
+  "ai_observations_labeled_unverified": true,
+  "community_report_created": false,
+  "handset_reply_confirmed_by_user_screenshot": true,
+  "session_limit_minutes": 30,
+  "session_max_accepted_messages": 20,
+  "persistent_listener_enabled": false,
+  "phone_numbers_raw_text_message_ids_or_credentials_recorded": false
+}

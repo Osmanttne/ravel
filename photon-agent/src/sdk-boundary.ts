@@ -6,6 +6,7 @@ export interface CloudEvent {
   direction: string | undefined;
   id: string;
   timestamp: Date;
+  sender?: { address?: string };
   content: { type: string; text?: string; url?: string };
   isAutoReply?: boolean;
   isSystemMessage?: boolean;
@@ -15,7 +16,7 @@ export interface CloudEvent {
 }
 export function toIncomingEvent(
   spaceValue: unknown, messageValue: unknown,
-  startedAt: number, now = Date.now(),
+  startedAt: number, now = Date.now(), expectedSender?: string,
 ): IncomingEvent | undefined {
   if (typeof spaceValue !== "object" || spaceValue === null
     || typeof messageValue !== "object" || messageValue === null) return undefined;
@@ -25,6 +26,12 @@ export function toIncomingEvent(
     || !(candidate.timestamp instanceof Date) || typeof candidate.reply !== "function"
     || typeof candidate.content !== "object" || candidate.content === null) return undefined;
   const message = candidate as unknown as CloudEvent;
+  if (expectedSender !== undefined) {
+    const senderAddress = message.sender?.address;
+    const ownerChatGuid = `any;-;${expectedSender}`;
+    if (!/^\+[1-9][0-9]{6,14}$/.test(expectedSender) || senderAddress !== expectedSender
+      || space.id !== ownerChatGuid) return undefined;
+  }
   const timestamp = message.timestamp.getTime();
   // No backlog or replay analysis; only new, recent explicit inbound DMs.
   if (message.platform !== "imessage" || message.direction !== "inbound" || space.type !== "dm"

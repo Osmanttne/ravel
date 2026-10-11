@@ -80,8 +80,9 @@ test("fresh exact synthetic receipt precedes one Gemini check and a private repl
   const preview = JSON.parse(output[0]!);
   assert.equal(preview.code, "reply_preview_ready");
   assert.equal(preview.recipient, sender);
-  assert.match(preview.reply, /^Ravel private check\n\nGemini AI observations — unverified/);
-  assert.match(preview.reply, /Suspicious — verify before acting/);
+  assert.match(preview.reply, /^Ravel private check\n\nSuspicious: verify before acting/);
+  assert.match(preview.reply, /Gemini observations\.$/);
+  assert.doesNotMatch(preview.reply, /unverified|—/i);
   assert.match(preview.reply, /no community report was created/);
   assert.doesNotMatch(preview.reply, /private-message-sentinel|tickets\.example/);
   assert.equal(preview.messages_sent, 0);
@@ -137,7 +138,7 @@ test("uncertain valid Gemini response remains uncertain in the reviewed reply", 
     receive: async () => receipt, check: async () => response, output: line => output.push(line),
   }), 0);
   assert.match(JSON.parse(output[0]!).reply, /Needs human review/);
-  assert.doesNotMatch(JSON.parse(output[0]!).reply, /Suspicious —/);
+  assert.doesNotMatch(JSON.parse(output[0]!).reply, /Suspicious:/);
 });
 
 test("fixed check diagnostic lists new supported codes without reflecting model strings or unknown codes", async () => {

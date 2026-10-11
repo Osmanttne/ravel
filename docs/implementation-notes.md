@@ -1,6 +1,6 @@
 # Implementation notes
 
-Milestones 0–2 provide a local development backend with credential-free fixture mode and an optional Gemini adapter. Milestone 3 remains in progress: renamed core tests, unsigned/signed builds, physical installation, and app launch pass. Earlier analysis/UI results are historical; renewed UI and Photos-flow acceptance remain pending. The user-approved focus is Gemini + Photon; Tiger Data/report storage is deferred. The specification remains [RAVEL_CONTEXT.md](../RAVEL_CONTEXT.md).
+Milestones 0–2 provide a local development backend with credential-free fixture mode and an optional Gemini adapter. Milestone 3 remains in progress: renamed core tests, unsigned/signed builds, physical installation, and app launch pass; the user has now confirmed successful private Gemini analysis through both the app picker and Photos Share Extension with synthetic content. Device UI automation and direct text/URL sharing from the test host remain unverified. The user-approved focus is Gemini + Photon; Tiger Data/report storage is deferred. The specification remains [RAVEL_CONTEXT.md](../RAVEL_CONTEXT.md).
 
 ## Current boundaries
 
@@ -63,13 +63,17 @@ plists confirm Ravel display names, new bundle IDs, and the Debug LAN Gemini
 address on port 8001. The initial installation reached the free-profile
 three-app limit. The user approved removing the old UI test runner; removal,
 signed Ravel installation, and app launch succeeded on the physical iPhone.
-The embedded extension is built and signed; runtime Share-flow acceptance and
-new device UI checks remain pending. [iOS setup](../ios/README.md) supplies them.
+The embedded extension is built and signed; the user has now confirmed a
+successful private Photos Share check on the physical iPhone. New device UI
+checks and direct test-host text/URL sharing remain pending. [iOS setup](../ios/README.md) supplies them.
 Milestone 3 is not yet complete.
 
 The backends were restarted from the renamed repository. Gemini on port 8001
-and fixture mode on port 8002 pass all four localhost/LAN health checks. This
-confirms backend availability; renewed handset analysis remains unverified.
+and fixture mode on port 8002 pass all four localhost/LAN health checks. The
+initial device retry exposed `RESOURCE_EXHAUSTED` on `gemini-3.8-flash`; the
+local `.env` and running server now use `gemini-3.5-flash-lite`, after which the
+synthetic Photos Share analysis succeeded. The sanitized device result is in
+`docs/artifacts/ios-gemini-share-acceptance.json`.
 
 Milestone 4 (Tiger Data reporting and matching) is deferred. Milestone 5's completed
 bounded reviewed slice adds Photon cloud DMs for user-sent text/link checks. It calls `/v1/check`
@@ -156,10 +160,16 @@ approved the exact destination and full reply. One logical send returned
 `reply_send_accepted` with a validated SDK acknowledgement and `messages_sent: 1`.
 The user explicitly confirmed handset receipt. That approval is consumed;
 further sends require fresh approval, and the unattended runner remains disabled.
-Milestone 5's bounded reviewed text-and-URL slice is complete. Milestone 6 covers
-demo preparation, benign controls, failure handling, and a backup demonstration.
-These cases do not establish general accuracy or unattended operation; Photon
-screenshot support remains future work. The
+Milestone 5's bounded reviewed text-and-URL slice is complete. A separate live
+benign account-safety control was received from the owner's assigned Texts on
+route. Its first backend attempt returned `service_unavailable`; after the user
+approved one retry of the same synthetic text, Gemini returned
+`insufficient_evidence` with no supported indicators, no report, and no verified
+threat. The user approved the exact reply and confirmed handset receipt after one
+logical send. See the [sanitized benign-control proof](artifacts/photon-benign-control-round-trip.json).
+Milestone 6 still covers remaining demo preparation, failure handling, and a
+backup demonstration alongside manual Photos acceptance. These cases do not
+establish general accuracy or unattended operation; Photon screenshot support remains future work. The
 [fixed synthetic roundtrip proof](artifacts/photon-gemini-round-trip.json) records
 that separate live case. [Controlled demo steps](demo-script.md) explain
 the sequence and personal-handle versus assigned-line routing.
@@ -183,15 +193,20 @@ destination requests, preview downloads, or Photon sends. The fixture proof is
 `docs/artifacts/gemini-coverage-fixture.json`; the separate live proof is
 `docs/artifacts/gemini-coverage-live.json`. The first expanded live attempt hit a
 truthful provider timeout on its first text; the [timeout record](artifacts/gemini-coverage-timeout.json)
-preserves that attempt and expanded live acceptance remains pending. For exactly
+preserves that attempt. The subsequent live run passed all ten synthetic controls
+with nine Gemini generations and one local-only URL check. For exactly
 `gemini-3.8-flash` and its `models/` variant, the adapter sets the documented
 `thinking_level="low"`; other models retain provider defaults and the selected
 model/environment are unchanged. Ten actual SDK wire tests verify this narrow
-setting. No diagnosis or successful remedy is claimed from the timeout.
+setting. This adapter setting does not explain that earlier timeout; a separate
+later quota diagnostic and model switch are documented in [Gemini setup](gemini.md).
 [Official thinking documentation](https://ai.google.dev/gemini-api/docs/generate-content/thinking).
 These bounded controls do not establish general phishing accuracy or calibration.
-Manual Photos sharing, a live benign Photon control, deliberate failure
-demonstration, and backup recording remain pending; Milestone 6 is in progress.
+Manual Photos sharing and the offline failure demonstration are verified. The
+backup recording remains pending. One live benign Photon control is verified but does not validate
+account-secret detection or general accuracy; see the
+[sanitized proof](artifacts/photon-benign-control-round-trip.json). Milestone 6
+is in progress.
 
 Malformed extraction remains a separate provider error. Missing evidence spans,
 quote mismatches, unsupported URLs, missing fields, and incomplete generation can

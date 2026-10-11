@@ -24,9 +24,11 @@ npm run demo
 ```
 
 The demo uses fixed synthetic `.example` inputs and visibly labels its fixture
-replies. It loads no environment files and makes no Photon, backend, or Gemini
-requests. Tests inject HTTP transports and event handlers; they do not verify
-live message receipt or delivery. The expanded suite passes 420 offline tests.
+replies. It also shows a clearly labeled simulated provider timeout and the
+agent's truthful retry message. It loads no environment files and makes no
+Photon, backend, or Gemini requests. Tests inject HTTP transports and event
+handlers; they do not verify live message receipt or delivery. The expanded
+suite passes 423 offline tests.
 
 ## Configuration
 
@@ -57,22 +59,41 @@ raw private content, project identifiers, or secrets. Controlled preview CLIs
 intentionally display the selected recipient, fixed synthetic input, and formatted
 reply for human review; keep that review output private.
 
-## Live messages require recipient approval
+## Bounded live demo session
 
-The user requires confirmation of the exact recipient and exact outgoing message
-before **any** Photon send, including an automatic reply. The CLI is deliberately
-disabled in this slice: both `npm start` and `npm start -- --live` exit before
-loading credentials, importing the SDK, or opening a listener. An account metadata
-probe is separate from live messaging and does not prove receipt or delivery.
+The user approved real automatic replies to their own registered sender for a
+demo. From `photon-agent/`, start the cloud listener with the owner's own E.164
+number (not the Photon-managed **Texts on** number):
 
-Before a future controlled send, review the selected project, actual destination
-phone number or address, sender routing, and exact outgoing text with the user.
-Shared-line routing can depend on the recipient; selecting a project alone does
-not establish the destination or sender number. User approval must precede the
-send, and the adapter must restrict sending to that approved route and content.
-The unattended runner remains disabled. Controlled preview/send scripts provide
-a separate review flow; their existence does not authorize unattended replies.
-Do not enable the runner simply to verify credentials.
+```sh
+npm start -- --live --sender +12025550123
+```
+
+Replace the example with the owner's registered number. The session accepts only
+fresh direct messages whose sender and chat both match that number, then stops
+after 30 minutes or 20 accepted messages. Ctrl-C stops it sooner. Other senders,
+groups, stale messages, and unsupported event types are ignored. Do not run this
+for another user's number or leave it running unattended.
+
+Ordinary message text goes through the live `/v1/check` backend and Gemini; the
+reply is derived from the validated check result, not a canned demo response.
+Standalone URLs are parsed locally and do not call Gemini. The backend must report
+`mode: gemini` at `/health`; fixture mode is not acceptable for this live demo.
+No reports are created. Keep the Mac, backend, and Photon process running; on a
+check or cloud failure the agent sends a truthful fixed failure message rather
+than substituting a fixture result. A Photon send acknowledgement is not proof
+of handset delivery; confirm receipt on the phone.
+
+The bounded automatic-response path has passed one benign and one suspicious
+synthetic text check through Gemini, both with user-confirmed handset receipt.
+See the sanitized [benign](../docs/artifacts/photon-auto-reply-benign-control.json)
+and [suspicious](../docs/artifacts/photon-auto-reply-suspicious-control.json)
+records. These controls do not establish general accuracy.
+
+This narrow, time-limited approval does not authorize sends to other recipients,
+long-running unattended service, or a different reply flow. The preview/send
+scripts remain separate tools requiring fresh approval of their exact destination
+and full body.
 
 The root read-only verification script checks project authentication and account
 metadata without issuing message tokens or sending. The

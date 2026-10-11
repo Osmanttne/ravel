@@ -6,26 +6,47 @@ struct ShareCheckView: View {
     @ObservedObject var model: ShareCheckModel
     let onCancel: () -> Void
     let onDone: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var palette: RavelPalette { RavelPalette(colorScheme) }
 
     var body: some View {
         NavigationStack {
-            Group {
-                if let response = model.response, model.phase == .result {
-                    RavelResultView(response: response, isURLOnly: isURLOnly)
-                } else {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 20) {
-                            Text("Check this shared item")
-                                .font(.title2.bold())
-                                .accessibilityAddTraits(.isHeader)
-                            contentBody
+            ZStack {
+                RavelBackground()
+                Group {
+                    if let response = model.response, model.phase == .result {
+                        RavelResultView(response: response, isURLOnly: isURLOnly)
+                    } else {
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 0) {
+                                RavelBrandMark(palette: palette)
+                                VStack(alignment: .leading, spacing: 7) {
+                                    RavelEyebrow(title: "SHARED ITEM", palette: palette)
+                                    Text("Review before checking")
+                                        .font(.system(.title, design: .rounded, weight: .bold))
+                                        .foregroundStyle(palette.primaryText)
+                                        .accessibilityAddTraits(.isHeader)
+                                    Text("Only the item you selected is included. Nothing is sent until you choose to analyze privately.")
+                                        .font(.subheadline)
+                                        .foregroundStyle(palette.secondaryText)
+                                }
+                                .padding(.top, 22)
+                                contentBody
+                                    .padding(.top, 18)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 16)
+                            .frame(maxWidth: 620)
+                            .frame(maxWidth: .infinity)
                         }
-                        .padding()
+                        .scrollDismissesKeyboard(.interactively)
                     }
                 }
             }
             .navigationTitle("Ravel")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.hidden, for: .navigationBar)
             .toolbar {
                 if model.phase == .result {
                     ToolbarItem(placement: .confirmationAction) {
@@ -48,10 +69,14 @@ struct ShareCheckView: View {
     @ViewBuilder private var contentBody: some View {
         switch model.phase {
         case .loadingItem:
-            ProgressView("Preparing the selected item…")
-                .frame(maxWidth: .infinity, alignment: .leading)
-            Text("Nothing is sent until you choose Analyze privately.")
-                .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 9) {
+                sectionRule
+                ProgressView("Preparing the selected item…")
+                    .tint(palette.accent)
+                Text("Nothing is sent until you choose Analyze privately.")
+                    .font(.caption)
+                    .foregroundStyle(palette.secondaryText)
+            }
             if model.showsSlowFallback { manualFallback }
         case .preview, .analyzing, .checkFailed:
             selectedPreview
@@ -61,25 +86,27 @@ struct ShareCheckView: View {
                 notice(configurationMessage, symbol: "network.slash")
                 manualFallback
             } else if model.phase == .analyzing {
-                ProgressView("Analyzing privately…")
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                sectionRule
+                HStack(spacing: 10) {
+                    ProgressView().tint(palette.accent)
+                    Text("Analyzing privately…")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(palette.primaryText)
+                }
                 Button("Cancel check", action: model.cancelAnalysis)
-                    .buttonStyle(.bordered)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(palette.secondaryText)
                 if model.showsSlowFallback { manualFallback }
             } else {
-                Button(model.phase == .checkFailed ? "Try again privately" : "Analyze privately",
-                       action: model.analyze)
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
+                primaryAction(title: model.phase == .checkFailed ? "Try again privately" : "Analyze privately",
+                              action: model.analyze)
                     .disabled(!model.canAnalyze)
-                    .frame(maxWidth: .infinity)
                 if model.phase == .checkFailed { manualFallback }
             }
         case .loadFailed:
             notice(model.message ?? "The selected item couldn't be prepared.",
                    symbol: "exclamationmark.circle")
-            Button("Try loading again", action: model.retryLoading)
-                .buttonStyle(.borderedProminent)
+            primaryAction(title: "Try loading again", action: model.retryLoading)
             manualFallback
         case .unavailable:
             notice(model.message ?? "This shared item isn't supported.", symbol: "square.and.arrow.up")
@@ -93,48 +120,65 @@ struct ShareCheckView: View {
     @ViewBuilder private var selectedPreview: some View {
         switch model.content {
         case .image(let image):
-            if let preview = model.previewImage {
-                Image(uiImage: preview)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: .infinity, maxHeight: 220)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .accessibilityLabel("Preview of the selected screenshot")
+            VStack(alignment: .leading, spacing: 12) {
+                sectionRule
+                Label("Selected screenshot", systemImage: "photo")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(palette.primaryText)
+                if let preview = model.previewImage {
+                    Image(uiImage: preview)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity, maxHeight: 220)
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .accessibilityLabel("Preview of the selected screenshot")
+                }
+                Text("Prepared screenshot · \(image.pixelWidth) × \(image.pixelHeight)")
+                    .font(.caption)
+                    .foregroundStyle(palette.secondaryText)
             }
-            Text("Prepared screenshot · \(image.pixelWidth) × \(image.pixelHeight)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
         case .text(let text):
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Selected message").font(.headline)
+            VStack(alignment: .leading, spacing: 9) {
+                sectionRule
+                Label("Selected message", systemImage: "text.alignleft")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(palette.primaryText)
                 Text(verbatim: text)
                     .font(.body)
+                    .foregroundStyle(palette.primaryText)
                     .lineLimit(8)
                 DisclosureGroup("Inspect full selected message") {
                     Text(verbatim: text)
                         .font(.callout)
+                        .foregroundStyle(palette.secondaryText)
                         .textSelection(.enabled)
                         .padding(.top, 8)
                 }
+                .tint(palette.accent)
                 Text("\(text.unicodeScalars.count) characters will be sent.")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(palette.secondaryText)
             }
         case .url(let rawURL):
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Selected link").font(.headline)
+            VStack(alignment: .leading, spacing: 9) {
+                sectionRule
+                Label("Selected link", systemImage: "link")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(palette.primaryText)
                 Text(displayOrigin(rawURL))
-                    .font(.body)
+                    .font(.body.monospaced())
+                    .foregroundStyle(palette.primaryText)
                 DisclosureGroup("Inspect full selected link") {
-                    // Local preview only. Use plain text so a suspect URL cannot be opened.
                     Text(verbatim: rawURL)
                         .font(.callout.monospaced())
+                        .foregroundStyle(palette.information)
                         .textSelection(.enabled)
                         .padding(.top, 8)
                 }
+                .tint(palette.accent)
                 Text("The full selected link is sent for validation. Its destination is not opened.")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(palette.secondaryText)
             }
         case nil:
             EmptyView()
@@ -142,9 +186,11 @@ struct ShareCheckView: View {
     }
 
     private var privacyNotice: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Label("Private check", systemImage: "hand.raised")
+        VStack(alignment: .leading, spacing: 9) {
+            sectionRule
+            Label("Private check", systemImage: "lock.shield.fill")
                 .font(.headline)
+                .foregroundStyle(palette.accent)
             if case .url = model.content {
                 Text("This selected link will be sent to your Ravel backend for parsing. It will not be opened or sent to Gemini for AI analysis.")
                 Text("A private check does not create a community report. Parsing a link does not establish its safety.")
@@ -154,30 +200,62 @@ struct ShareCheckView: View {
                 Text("Google's handling depends on the backend's service tier. Use synthetic examples during development.")
                     .font(.caption)
                 Link("Google Gemini data terms", destination: URL(string: "https://ai.google.dev/gemini-api/terms")!)
-                    .font(.caption)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(palette.accent)
             }
         }
+        .foregroundStyle(palette.primaryText)
         .font(.subheadline)
-        .padding()
-        .background(.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
     }
 
     private var manualFallback: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Continue in Ravel").font(.headline)
+        VStack(alignment: .leading, spacing: 9) {
+            sectionRule
+            Label("Continue in Ravel", systemImage: "arrowshape.turn.up.right")
+                .font(.headline)
+                .foregroundStyle(palette.primaryText)
             Text("Close this sheet, open Ravel yourself, and select the same screenshot or paste the same message or link. This shared item won't be saved or carried over.")
                 .font(.subheadline)
+                .foregroundStyle(palette.secondaryText)
             Button("Cancel and close", action: onCancel)
-                .buttonStyle(.bordered)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(palette.accent)
         }
-        .padding()
-        .background(.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
     }
 
     private func notice(_ message: String, symbol: String) -> some View {
         Label(message, systemImage: symbol)
             .font(.subheadline)
+            .foregroundStyle(palette.caution)
             .accessibilityElement(children: .combine)
+            .padding(.vertical, 12)
+            .overlay(alignment: .top) { sectionRule }
+    }
+
+    private var sectionRule: some View {
+        Rectangle().fill(palette.border).frame(height: 1)
+    }
+
+    private func primaryAction(title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: "lock.fill")
+                Text(title).font(.headline)
+                Spacer()
+                Image(systemName: "arrow.right")
+                    .font(.subheadline.weight(.bold))
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 16)
+            .background(
+                LinearGradient(colors: [palette.brandBlue, palette.brandTeal],
+                               startPoint: .leading, endPoint: .trailing),
+                in: RoundedRectangle(cornerRadius: 18, style: .continuous)
+            )
+        }
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity)
     }
 
     private func displayOrigin(_ raw: String) -> String {

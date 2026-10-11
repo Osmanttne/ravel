@@ -34,7 +34,7 @@ final class PrivateCheckUITests: XCTestCase {
         XCTAssertFalse(fixtureElement(in: app).waitForExistence(timeout: 1),
                        "Entering text must not automatically submit it.")
         analyze.tap()
-        try assertPrivateFixtureResult(app, category: "Suspicious — verify before acting")
+        try assertPrivateFixtureResult(app, category: "Suspicious: verify before acting")
         try finishResult(app)
         XCTAssertEqual(app.textViews["Message to check"].value as? String, "",
                        "Dismissing a result must clear the submitted message.")
@@ -57,7 +57,7 @@ final class PrivateCheckUITests: XCTestCase {
         try share("Share ticket message", from: host)
         try assertLabelContaining("Selected message", in: host)
         try analyzeSharedPreview(host)
-        try assertPrivateFixtureResult(host, category: "Suspicious — verify before acting")
+        try assertPrivateFixtureResult(host, category: "Suspicious: verify before acting")
         try finishResult(host)
     }
 

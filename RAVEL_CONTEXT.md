@@ -1,6 +1,6 @@
 # Ravel — Canonical Project Context for Codex
 
-> **Status:** Canonical specification; private backend and bounded reviewed Photon text/URL slice implemented. Milestone 6 and manual iOS Photos acceptance remain in progress.  
+> **Status:** Canonical specification; private backend and bounded reviewed Photon text/URL slice implemented. One live benign Photon control and physical-iPhone Photos Share check are verified; Milestone 6 demo hardening remains in progress.
 > **Prepared:** 2026-10-10  
 > **Primary use:** Put this file at the repository root. Codex should read it before planning or writing code.  
 > **Project:** Ravel — privacy-first, cross-platform scam checking and collaborative scam intelligence.  
@@ -11,7 +11,7 @@
 
 ## Current scope and implementation priority
 
-The user chose **Gemini + Photon** as the competition focus on 2026-10-10. Milestone 5's bounded reviewed text/URL slice is complete: controlled synthetic ticket-text and native-URL replies reached the owner's phone after separate exact recipient/body approvals. The unattended runner remains disabled and every later send needs fresh approval. Milestone 6 now expands account-secret evidence and benign controls, prepares the demo/failure backup, and retains the remaining manual iPhone Photos acceptance. Milestone 4 is deferred: no database account, report persistence, cross-report matching, embeddings, or campaign dashboard is required for this demo. Reporting remains unavailable and must be described truthfully in both clients. Photon image support remains future work.
+The user chose **Gemini + Photon** as the competition focus on 2026-10-10. Milestone 5's bounded reviewed text/URL slice is complete: controlled synthetic ticket-text and native-URL replies reached the owner's phone after separate exact recipient/body approvals. The user approved a real automatic-response session limited to their own registered sender, 30 minutes, and 20 messages. Two synthetic controls passed with user-confirmed handset replies: benign content returned insufficient evidence, and a code-request/account-threat message returned suspicious with unverified observations and code-sharing guidance ([benign record](docs/artifacts/photon-auto-reply-benign-control.json), [suspicious record](docs/artifacts/photon-auto-reply-suspicious-control.json)). These do not establish general accuracy. The temporary listener was stopped after validation; no other recipient or persistent runner is approved. Milestone 6 includes account-secret evidence and benign controls. Manual iPhone Photos Share acceptance passed with a synthetic credential-request screenshot. The offline failure demo passed without network calls; a backup recording remains. Milestone 4 is deferred: no database account, report persistence, cross-report matching, embeddings, or campaign dashboard is required for this demo. Reporting remains unavailable and must be described truthfully in both clients. Photon image support remains future work.
 
 Sections describing stored reports, Tiger Data, campaign correlation, and related evaluation below retain the future product design; they are not requirements for the current Gemini + Photon slice. The competition requires General or Beginner; Gemini, Photon, and Tiger Data are separate optional sponsor tracks. The current target is General (subject to team eligibility) plus Gemini and Photon.
 
@@ -651,7 +651,7 @@ D. **Ravel** = structured content + corroborated destination links + time-window
 
 ## 14. Milestone plan: the exact order Codex should implement
 
-**Current user-approved order:** Milestone 5's bounded reviewed private text/URL Photon slice is complete. Continue Milestone 6's expanded evidence/benign controls and demo hardening alongside remaining Milestone 3 manual Photos validation. Milestone 4 is deferred. Keep milestone numbering for continuity. Report confirmation in Milestone 5 is deferred with report persistence; the agent must explain that reporting is unavailable.
+**Current user-approved order:** Milestone 5's bounded reviewed private text/URL Photon slice is complete. Continue Milestone 6's demo hardening; manual Milestone 3 Photos Share acceptance is now verified on the physical iPhone with synthetic content. One live benign Photon control is verified ([sanitized proof](docs/artifacts/photon-benign-control-round-trip.json)); the iOS result is recorded in [the device acceptance proof](docs/artifacts/ios-gemini-share-acceptance.json). These checks do not establish general accuracy. Milestone 4 is deferred. Keep milestone numbering for continuity. Report confirmation in Milestone 5 is deferred with report persistence; the agent must explain that reporting is unavailable.
 
 ### Milestone 0 — Scaffold and contracts
 
@@ -687,7 +687,7 @@ D. **Ravel** = structured content + corroborated destination links + time-window
 
 ### Milestone 5 — Photon Spectrum iMessage agent
 
-**Status:** The bounded reviewed slice is complete: one synthetic ticket-text/Gemini reply and one native-URL/local-check reply have verified handset receipt. Generic text/command branches are offline tested, not separately live verified. Unattended replies remain disabled and all future sends need fresh exact recipient/body approval.
+**Status:** The bounded reviewed slice is complete: one synthetic ticket-text/Gemini reply and one native-URL/local-check reply have verified handset receipt. The owner-only 30-minute/20-message automatic-response path has confirmed benign and suspicious Gemini-backed handset replies. No other recipient or persistent unattended service is approved.
 
 **Deliver:** TypeScript Spectrum cloud agent, configuration, shared backend client, simple text/URL query/reply, explicit processing disclosure, and a truthful reporting-unavailable response. Verify live Photon account and provider setup. Opt-in report confirmation returns only if reporting is later implemented.
 
@@ -695,7 +695,7 @@ D. **Ravel** = structured content + corroborated destination links + time-window
 
 ### Milestone 6 — Demo + hardening
 
-**Status:** In progress. Additive account-secret fields and deterministic policy are implemented and tested offline; expanded live controls and remaining device/demo acceptance are separate validation gates.
+**Status:** In progress. Additive account-secret fields and deterministic policy are implemented and tested offline; one live benign Photon control and physical-iPhone Photos Share check are verified. The offline failure demo is verified; the backup recording remains.
 
 **Deliver:** Gemini + Photon judge script, synthetic suspicious and benign controls, smoke tests, failure cases, README demo commands, live integration verification, and screen recording backup. A dashboard/report timeline remains deferred with Milestone 4.
 
@@ -703,8 +703,11 @@ The authorized coverage slice adds `credentials_requested`,
 `verification_code_requested`, and `account_threat_indicated` with quote-supported
 extraction and benign controls. Do not broaden category enums, expose secret/code
 values, equate account warnings with fraud, or claim general phishing accuracy
-from a small synthetic evaluation. Manual Photos sharing, a live benign Photon
-control, deliberate failure demonstration, and backup recording remain required.
+from a small synthetic evaluation. One live benign Photon control returned
+`insufficient_evidence` without supported indicators; its sanitized proof is
+linked above. Manual Photos sharing returned `suspicious_verify` for a synthetic
+credential-request image without creating a report. The offline failure
+demonstration is verified; the backup recording remains required.
 
 **Acceptance:** Multi-client end-to-end demo without invented detection results, no obvious privacy regressions, all critical tests pass.
 

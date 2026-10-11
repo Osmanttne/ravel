@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 760" role="img" aria-labelledby="title description">
+  <title id="title">How Gemini observations inform a Ravel assessment</title>
+  <desc id="description">A synthetic ticket message is mapped into three visible observations. Ravel's policy combines them into a cautious suspicious, verify-before-acting assessment and a practical next step. The example destination uses the reserved .example domain and is not visited.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#080d14"/><stop offset="1" stop-color="#0a1118"/></linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#326bff"/><stop offset=".5" stop-color="#08c3c7"/><stop offset="1" stop-color="#43c365"/></linearGradient>
+    <style>
+      .eyebrow{font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2.3px;fill:#9cafc0}
+      .label{font:600 21px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#edf4f8}
+      .detail{font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#9cafc0}
+      .tiny{font:600 11px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:1.3px;fill:#8197a9}
+      .message{font:500 19px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#16212b}
+      .number{font:700 15px ui-monospace,SFMono-Regular,Menlo,monospace;fill:#071018}
+    </style>
+  </defs>
+  <rect width="1600" height="760" rx="26" fill="url(#bg)"/>
+  <path d="M612 74V646M1222 74V646" stroke="#9eb3c8" stroke-opacity=".13" stroke-dasharray="3 9"/>
+
+  <text x="70" y="82" class="eyebrow">01 / SYNTHETIC INPUT</text>
+  <text x="70" y="119" class="detail">Example only. Destination uses .example.</text>
+  <text x="672" y="82" class="eyebrow">02 / GEMINI OBSERVATIONS</text>
+  <text x="1260" y="82" class="eyebrow">03 / RAVEL ASSESSMENT</text>
+
+  <rect x="70" y="158" width="510" height="448" rx="12" fill="#edf2f4"/>
+  <path d="M82 178H550" stroke="#12202a" stroke-opacity=".12"/>
+  <circle cx="95" cy="224" r="15" fill="#326bff"/><text x="95" y="229" text-anchor="middle" class="number">1</text>
+  <text x="128" y="231" class="message">Free concert tickets!</text>
+  <path d="M82 270H550" stroke="#12202a" stroke-opacity=".12"/>
+  <circle cx="95" cy="322" r="15" fill="#ffad37"/><text x="95" y="327" text-anchor="middle" class="number">2</text>
+  <rect x="124" y="296" width="396" height="39" rx="5" fill="#ffad37" fill-opacity=".13" stroke="#ffad37" stroke-opacity=".72"/>
+  <text x="138" y="322" class="message">Pay a $20 transfer fee before delivery.</text>
+  <path d="M82 370H550" stroke="#12202a" stroke-opacity=".12"/>
+  <circle cx="95" cy="422" r="15" fill="#326bff"/><text x="95" y="427" text-anchor="middle" class="number">3</text>
+  <rect x="124" y="401" width="292" height="39" rx="5" fill="#326bff" fill-opacity=".12" stroke="#326bff" stroke-opacity=".72"/>
+  <text x="138" y="427" class="message" fill="#3158b7">tickets.example/offer</text>
+  <path d="M82 474H550" stroke="#12202a" stroke-opacity=".12"/>
+  <circle cx="95" cy="526" r="15" fill="#ec5b8c"/><text x="95" y="531" text-anchor="middle" class="number">4</text>
+  <rect x="124" y="506" width="140" height="39" rx="5" fill="#ec5b8c" fill-opacity=".13" stroke="#ec5b8c" stroke-opacity=".72"/>
+  <text x="138" y="532" class="message">Act now!</text>
+  <text x="82" y="608" class="tiny">MESSAGE TEXT IS SHOWN FOR EVIDENCE CONTEXT</text>
+
+  <path d="M520 315H655M416 420C510 420 554 371 655 371M264 526C474 526 523 428 655 428" fill="none" stroke="#ffad37" stroke-opacity=".72" stroke-width="1.5"/>
+  <path d="M520 420H655" fill="none" stroke="#326bff" stroke-opacity=".72" stroke-width="1.5"/>
+  <path d="M655 315V428" stroke="#74899b" stroke-opacity=".35" stroke-width="1.4"/>
+
+  <g>
+    <circle cx="700" cy="315" r="19" fill="#ffad37"/><text x="700" y="320" text-anchor="middle" class="number">A</text>
+    <text x="737" y="311" class="label">Advance fee before delivery</text>
+    <text x="737" y="336" class="detail">A specific payment condition is stated.</text>
+    <path d="M655 315H680" stroke="#ffad37" stroke-width="1.7"/>
+  </g>
+  <g>
+    <circle cx="700" cy="371" r="19" fill="#326bff"/><text x="700" y="376" text-anchor="middle" class="number">B</text>
+    <text x="737" y="367" class="label">Destination is visible</text>
+    <text x="737" y="392" class="detail">The link is identified, not opened.</text>
+    <path d="M655 371H680" stroke="#326bff" stroke-width="1.7"/>
+  </g>
+  <g>
+    <circle cx="700" cy="428" r="19" fill="#ec5b8c"/><text x="700" y="433" text-anchor="middle" class="number">C</text>
+    <text x="737" y="424" class="label">Urgency language</text>
+    <text x="737" y="449" class="detail">“Act now” adds time pressure.</text>
+    <path d="M655 428H680" stroke="#ec5b8c" stroke-width="1.7"/>
+  </g>
+  <path d="M655 486H1162" stroke="#b6c9d8" stroke-opacity=".1"/>
+  <text x="672" y="535" class="tiny">OBSERVATIONS ARE NOT PROOF OF FRAUD</text>
+  <text x="672" y="566" class="detail">The example is synthetic. No real site is contacted.</text>
+
+  <path d="M1001 315C1088 315 1090 371 1164 371M1001 371H1164M1001 428C1088 428 1090 371 1164 371" fill="none" stroke="url(#brand)" stroke-opacity=".72" stroke-width="1.8"/>
+  <circle cx="1182" cy="371" r="8" fill="#43c365"/>
+  <path d="M1190 371H1304" stroke="url(#brand)" stroke-width="2"/>
+
+  <circle cx="1390" cy="371" r="86" fill="#101c24" stroke="#ffad37" stroke-width="1.5"/>
+  <circle cx="1390" cy="371" r="68" fill="none" stroke="#ffad37" stroke-opacity=".18" stroke-width="11"/>
+  <circle cx="1390" cy="371" r="5" fill="#ffad37"/>
+  <text x="1390" y="355" text-anchor="middle" class="tiny">ASSESSMENT</text>
+  <text x="1390" y="387" text-anchor="middle" class="label">Suspicious</text>
+  <text x="1390" y="413" text-anchor="middle" class="detail">Verify first</text>
+  <text x="1260" y="484" class="tiny">NOT A CONFIRMED FRAUD FINDING</text>
+  <text x="1260" y="530" class="label">Next step</text>
+  <text x="1260" y="560" class="detail">Verify through the ticket</text>
+  <text x="1260" y="584" class="detail">provider before paying.</text>
+
+  <path d="M70 660H1530" stroke="#9eb3c8" stroke-opacity=".15"/>
+  <circle cx="82" cy="704" r="5" fill="#326bff"/><text x="100" y="710" class="tiny">GEMINI EXTRACTS OBSERVATIONS</text>
+  <path d="M466 704H604" stroke="#647f94" stroke-width="1.5"/>
+  <circle cx="624" cy="704" r="5" fill="#08c3c7"/><text x="642" y="710" class="tiny">RAVEL POLICY FORMS THE ASSESSMENT</text>
+  <path d="M1051 704H1190" stroke="#647f94" stroke-width="1.5"/>
+  <circle cx="1210" cy="704" r="5" fill="#43c365"/><text x="1228" y="710" class="tiny">PRACTICAL NEXT STEP</text>
+</svg>

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 760" role="img" aria-labelledby="title description">
+  <title id="title">Ravel today and a future opt-in signal network</title>
+  <desc id="description">The live product makes private checks without storing reports. A roadmap illustration shows how explicitly opted-in reports might be compared for shared destinations, similar language, and time windows before human review. Campaign matching is not implemented.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#080d14"/><stop offset="1" stop-color="#0a1118"/></linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#326bff"/><stop offset=".5" stop-color="#08c3c7"/><stop offset="1" stop-color="#43c365"/></linearGradient>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse"><path d="M36 0H0V36" fill="none" stroke="#a1b5c5" stroke-opacity=".035"/></pattern>
+    <style>
+      .eyebrow{font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2.5px;fill:#9cafc0}
+      .label{font:600 22px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#edf4f8}
+      .detail{font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#9cafc0}
+      .tiny{font:600 11px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:1.4px;fill:#8197a9}
+      .mono{font:600 16px ui-monospace,SFMono-Regular,Menlo,monospace;fill:#b4c2ce}
+      .good{fill:#43c365}
+    </style>
+  </defs>
+  <rect width="1600" height="760" rx="26" fill="url(#bg)"/><rect width="1600" height="760" rx="26" fill="url(#grid)"/>
+  <path d="M555 74V682" stroke="#9eb3c8" stroke-opacity=".16" stroke-dasharray="3 9"/>
+
+  <text x="74" y="82" class="eyebrow">TODAY / LIVE</text>
+  <text x="74" y="127" class="label">Private checks stand alone</text>
+  <text x="74" y="166" class="detail">A selected item is assessed for its sender only.</text>
+
+  <circle cx="174" cy="330" r="48" fill="#0d1a27" stroke="#326bff" stroke-opacity=".6" stroke-width="1.5"/>
+  <circle cx="174" cy="330" r="35" fill="none" stroke="#326bff" stroke-opacity=".22"/>
+  <path d="M158 321h32a6 6 0 0 1 6 6v17a6 6 0 0 1-6 6h-12l-10 8v-8h-10a6 6 0 0 1-6-6v-17a6 6 0 0 1 6-6Z" fill="none" stroke="#75a0ff" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M160 330h21M160 337h14" stroke="#75a0ff" stroke-width="2" stroke-linecap="round"/>
+  <text x="174" y="410" text-anchor="middle" class="label">One item</text>
+  <text x="174" y="435" text-anchor="middle" class="detail">shared by choice</text>
+
+  <path d="M224 330H326" stroke="url(#brand)" stroke-width="2"/>
+  <circle cx="358" cy="330" r="31" fill="#0d1b24" stroke="#08c3c7" stroke-width="1.5"/>
+  <path d="M344 332c4-10 23-10 28 0M348 338c3-5 14-5 20 0" fill="none" stroke="#42d4d0" stroke-width="1.8" stroke-linecap="round"/>
+  <circle cx="358" cy="343" r="2" fill="#42d4d0"/>
+  <text x="358" y="390" text-anchor="middle" class="label">Gemini</text>
+  <text x="358" y="415" text-anchor="middle" class="detail">observations</text>
+
+  <path d="M390 330H481" stroke="url(#brand)" stroke-width="2"/>
+  <circle cx="499" cy="330" r="5" fill="#43c365"/>
+  <text x="74" y="525" class="tiny">PRIVATE RESULT</text>
+  <text x="74" y="566" class="mono">report_created</text>
+  <text x="269" y="566" class="mono good">false</text>
+  <text x="74" y="606" class="detail">No historical campaign matching</text>
+
+  <text x="610" y="82" class="eyebrow">FUTURE CONCEPT / NOT IMPLEMENTED</text>
+  <text x="610" y="127" class="label">Opt-in signals could reveal patterns</text>
+  <text x="610" y="166" class="detail">Illustrative only. Reports would require separate consent.</text>
+
+  <text x="674" y="232" class="tiny">REPORT</text>
+  <text x="836" y="232" class="tiny">SHARED DESTINATION</text>
+  <text x="978" y="232" class="tiny">SIMILAR LANGUAGE</text>
+  <text x="1122" y="232" class="tiny">TIME WINDOW</text>
+  <text x="1334" y="232" class="tiny">REVIEW</text>
+
+  <path d="M804 278H1245M804 368H1245M804 458H1245M804 548H1245" stroke="#708496" stroke-opacity=".12"/>
+  <path d="M900 252V574M1044 252V574M1186 252V574" stroke="#708496" stroke-opacity=".09" stroke-dasharray="2 8"/>
+
+  <g fill="#101a25" stroke="#778b9d" stroke-width="1.5">
+    <circle cx="706" cy="278" r="20"/><circle cx="706" cy="368" r="20"/><circle cx="706" cy="458" r="20"/><circle cx="706" cy="548" r="20"/>
+  </g>
+  <g class="tiny" text-anchor="middle" fill="#dce5eb">
+    <text x="706" y="282">A</text><text x="706" y="372">B</text><text x="706" y="462">C</text><text x="706" y="552">D</text>
+  </g>
+
+  <g fill="#111a24" stroke="#526474" stroke-opacity=".5" stroke-width="1"><rect x="873" y="263" width="54" height="30" rx="6"/><rect x="873" y="353" width="54" height="30" rx="6"/><rect x="873" y="443" width="54" height="30" rx="6"/><rect x="873" y="533" width="54" height="30" rx="6"/><rect x="1017" y="263" width="54" height="30" rx="6"/><rect x="1017" y="353" width="54" height="30" rx="6"/><rect x="1017" y="443" width="54" height="30" rx="6"/><rect x="1017" y="533" width="54" height="30" rx="6"/><rect x="1159" y="263" width="54" height="30" rx="6"/><rect x="1159" y="353" width="54" height="30" rx="6"/><rect x="1159" y="443" width="54" height="30" rx="6"/><rect x="1159" y="533" width="54" height="30" rx="6"/></g>
+  <g fill="#326bff"><rect x="873" y="263" width="54" height="30" rx="6"/><rect x="873" y="353" width="54" height="30" rx="6"/><rect x="873" y="533" width="54" height="30" rx="6"/></g>
+  <g fill="#08c3c7"><rect x="1017" y="263" width="54" height="30" rx="6"/><rect x="1017" y="443" width="54" height="30" rx="6"/><rect x="1017" y="533" width="54" height="30" rx="6"/></g>
+  <g fill="#43c365"><rect x="1159" y="353" width="54" height="30" rx="6"/><rect x="1159" y="443" width="54" height="30" rx="6"/><rect x="1159" y="533" width="54" height="30" rx="6"/></g>
+  <g fill="#071018"><circle cx="888" cy="278" r="3"/><circle cx="902" cy="278" r="3"/><circle cx="916" cy="278" r="3"/><circle cx="888" cy="368" r="3"/><circle cx="902" cy="368" r="3"/><circle cx="916" cy="368" r="3"/><circle cx="888" cy="548" r="3"/><circle cx="902" cy="548" r="3"/><circle cx="916" cy="548" r="3"/><circle cx="1032" cy="278" r="3"/><circle cx="1046" cy="278" r="3"/><circle cx="1060" cy="278" r="3"/><circle cx="1032" cy="458" r="3"/><circle cx="1046" cy="458" r="3"/><circle cx="1060" cy="458" r="3"/><circle cx="1032" cy="548" r="3"/><circle cx="1046" cy="548" r="3"/><circle cx="1060" cy="548" r="3"/><circle cx="1174" cy="368" r="3"/><circle cx="1188" cy="368" r="3"/><circle cx="1202" cy="368" r="3"/><circle cx="1174" cy="458" r="3"/><circle cx="1188" cy="458" r="3"/><circle cx="1202" cy="458" r="3"/><circle cx="1174" cy="548" r="3"/><circle cx="1188" cy="548" r="3"/><circle cx="1202" cy="548" r="3"/></g>
+
+  <path d="M1220 278C1270 278 1270 344 1305 378M1220 368C1262 368 1276 390 1305 400M1220 458C1262 458 1276 436 1305 418M1220 548C1270 548 1270 482 1305 440" fill="none" stroke="#08c3c7" stroke-opacity=".55" stroke-width="1.6"/>
+  <circle cx="1338" cy="409" r="39" fill="#0b2025" stroke="#08c3c7" stroke-width="1.5"/>
+  <circle cx="1338" cy="409" r="25" fill="none" stroke="#08c3c7" stroke-opacity=".25" stroke-width="8"/>
+  <circle cx="1338" cy="409" r="6" fill="#08c3c7"/>
+  <text x="1338" y="474" text-anchor="middle" class="label">Pattern</text>
+  <text x="1338" y="498" text-anchor="middle" class="detail">candidate</text>
+
+  <path d="M1377 409H1432" stroke="#43c365" stroke-opacity=".75" stroke-width="1.8"/>
+  <circle cx="1462" cy="409" r="23" fill="#132318" stroke="#43c365" stroke-width="1.5"/>
+  <path d="M1452 409h20M1462 399v20" stroke="#66d77b" stroke-width="1.7" stroke-linecap="round"/>
+  <text x="1462" y="457" text-anchor="middle" class="tiny">HUMAN</text>
+  <text x="1462" y="475" text-anchor="middle" class="tiny">REVIEW</text>
+
+  <path d="M610 660H1525" stroke="#9eb3c8" stroke-opacity=".12"/>
+  <circle cx="618" cy="698" r="4" fill="#ffad37"/>
+  <text x="634" y="703" class="detail">Signal overlap would suggest a review candidate, not prove fraud. Matching is not available in this build.</text>
+</svg>

@@ -17,8 +17,8 @@ test("an explicit inbound DM submits only its selected text and returns a labele
   await new PrivateCheckAgent(service).handle(incoming.event);
   assert.deepEqual(service.calls.map((call) => call.submission), [{ content_type: "text", text: SYNTHETIC_MESSAGE }]);
   assert.equal(incoming.replies.length, 1);
-  assert.match(incoming.replies[0]!, /Fixture demo — simulated assessment/);
-  assert.match(incoming.replies[0]!, /Suspicious — verify before acting/);
+  assert.match(incoming.replies[0]!, /Fixture demo: simulated assessment/);
+  assert.match(incoming.replies[0]!, /Suspicious: verify before acting/);
   assert.match(incoming.replies[0]!, /no community report was created/);
   assert.doesNotMatch(incoming.replies[0]!, /verified fraud|known malicious|99%|100%/i);
 });

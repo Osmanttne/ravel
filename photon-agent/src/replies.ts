@@ -1,12 +1,12 @@
 import type { CheckResponse, CheckSubmission } from "./contracts.js";
 
 export const PRIVACY_REPLY = "Ravel checks only the text or link you explicitly send to this bot. Your message passes through Photon and Ravel's backend; in connected mode text is also sent to Google Gemini. A link alone is parsed locally and never opened or sent to Gemini. We do not scan your other chats or save checks as community reports. Photon and Google's handling follows their provider terms: https://photon.codes/privacy-policy and https://ai.google.dev/gemini-api/terms. Send synthetic examples during development.";
-export const HELP_REPLY = "Send one message or complete HTTP(S) link for a private check. Text may be sent to Google Gemini for unverified AI observations. Links are parsed without visiting them; paste the accompanying message for context. Commands: /help, /privacy, /report. Photos and other attachments are not supported here; use Ravel's iPhone app. Community reporting is unavailable.";
+export const HELP_REPLY = "Send one message or complete HTTP(S) link for a private check. Text may be sent to Google Gemini for observations. Links are parsed without visiting them; paste the accompanying message for context. Commands: /help, /privacy, /report. Photos and other attachments are not supported here; use Ravel's iPhone app. Community reporting is unavailable.";
 export const REPORT_REPLY = "Community reporting and saved report matching are unavailable. This bot only checks privately and does not create reports.";
 export const ATTACHMENT_REPLY = "This bot currently checks text and links only. Paste the readable message, or select the screenshot in Ravel's iPhone app. No attachment was downloaded or analyzed.";
 
 const titles = {
-  suspicious_verify: "Suspicious — verify before acting",
+  suspicious_verify: "Suspicious: verify before acting",
   insufficient_evidence: "Insufficient evidence",
   needs_human_review: "Needs human review",
 } as const;
@@ -24,7 +24,7 @@ const reasons: Record<IndicatorCode, string> = {
 };
 const noIndicators = "No sufficiently supported tactic indicators were returned.";
 const unclearContent = "The extracted content is unclear or inconsistent. Review the original message and verify independently.";
-const accountAction = "Open the official app yourself or use an independently obtained official contact. Do not share passwords, verification codes, or account reset codes, or send money, in response to an unverified request.";
+const accountAction = "Open the official app yourself or use an independently obtained official contact. Do not share passwords, verification codes, or account reset codes, or send money, in response to this request.";
 
 function orderedIndicatorCodes(codes: readonly string[]): IndicatorCode[] {
   const selected = new Set(codes.filter((code): code is IndicatorCode => Object.hasOwn(reasons, code)));
@@ -38,18 +38,19 @@ function renderAssessment(mode: CheckResponse["mode"], category: CheckResponse["
   codes: readonly string[], isURL: boolean): string {
   const selected = orderedIndicatorCodes(codes);
   const modeCopy = mode === "fixture"
-    ? isURL ? "Fixture mode — link parsed locally." : "Fixture demo — simulated assessment."
-    : isURL ? "Gemini mode — this link was not analyzed by AI." : "Gemini AI observations — unverified.";
+    ? isURL ? "Fixture mode: link parsed locally." : "Fixture demo: simulated assessment."
+    : undefined;
   const detail = isURL
     ? "The link was parsed locally. Its destination was not visited, analyzed by AI, or checked against reputation data. Paste the accompanying message for useful context."
     : category === "needs_human_review" ? unclearContent : selected.map(code => reasons[code]).join(" ") || noIndicators;
   const action = !isURL && category !== "needs_human_review" && accountCodes.some(code => selected.includes(code))
     ? accountAction
     : "Verify through an independently obtained official contact before sending money or sensitive information.";
-  return [modeCopy, titles[category], detail,
+  return [...(modeCopy ? [modeCopy] : []), titles[category], detail,
     "These observations do not establish fraud. Missing evidence does not establish safety.",
     action,
-    "Checked privately; no community report was created."].join("\n\n");
+    "Checked privately; no community report was created.",
+    ...(mode === "gemini" && !isURL ? ["Gemini observations."] : [])].join("\n\n");
 }
 
 export function formatAssessment(result: CheckResponse, submission: CheckSubmission): string {
@@ -64,12 +65,12 @@ export function isCuratedAssessmentReply(reply: string): boolean {
   if (typeof reply !== "string" || reply.length > 3_000) return false;
   if (reply === renderAssessment("gemini", "insufficient_evidence", [], true)) return true;
   const parts = reply.split("\n\n");
-  if (parts.length !== 6) return false;
+  if (parts.length !== 6 || parts[5] !== "Gemini observations.") return false;
   const categories = ["suspicious_verify", "insufficient_evidence", "needs_human_review"] as const;
-  const category = categories.find(candidate => titles[candidate] === parts[1]);
+  const category = categories.find(candidate => titles[candidate] === parts[0]);
   if (!category) return false;
   const codes: IndicatorCode[] = [];
-  let detail = parts[2]!;
+  let detail = parts[1]!;
   if (detail !== noIndicators && detail !== unclearContent) {
     for (let count = 0; count < SUPPORTED_INDICATOR_CODES.length && detail; count++) {
       const code = SUPPORTED_INDICATOR_CODES.find(candidate => detail === reasons[candidate]

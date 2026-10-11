@@ -2,20 +2,13 @@ import { PrivateCheckAgent } from "./agent.js";
 import { loadConfiguration } from "./config.js";
 import { CheckFailure, RavelClient } from "./ravel-client.js";
 import { toIncomingEvent } from "./sdk-boundary.js";
+import { LIVE_SESSION_MAX_MESSAGES, LIVE_SESSION_MILLISECONDS, parseLiveSender } from "./live-session.js";
 import type { PlatformProviderConfig } from "@spectrum-ts/core";
 
-// Explicit activation keeps builds, tests, imports, and offline demos disconnected.
 async function main(): Promise<void> {
-  // The user requires approval of the exact recipient and outgoing text before
-  // every Photon send. The unattended reply runner stays disabled in this slice.
-  const liveRepliesApproved = false;
-  if (!liveRepliesApproved) {
-    console.error("Live Photon replies are disabled. Approve the exact recipient and outgoing message before any controlled send.");
-    process.exitCode = 1;
-    return;
-  }
-  if (process.argv.slice(2).length !== 1 || process.argv[2] !== "--live") {
-    console.error("Cloud listening is disabled. After confirming a controlled DM test, run npm start -- --live.");
+  const allowedSender = parseLiveSender(process.argv.slice(2));
+  if (!allowedSender) {
+    console.error("Live replies require one explicitly allowlisted E.164 sender: npm start -- --live --sender +12025550123");
     process.exitCode = 1;
     return;
   }
@@ -41,24 +34,43 @@ async function main(): Promise<void> {
     // fields under TypeScript 5.9. Keep the bridge confined to the provider boundary.
     providers: [cloudProvider()],
     telemetry: false, options: { logLevel: "silent", flattenGroups: false } });
-  const stop = () => { controller.abort(); void application.stop().catch(() => {}); };
+  let stopPromise: Promise<void> | undefined;
+  const stop = () => {
+    controller.abort();
+    stopPromise ??= application.stop().catch(() => {});
+    return stopPromise;
+  };
   process.once("SIGINT", stop);
   process.once("SIGTERM", stop);
   const handler = new PrivateCheckAgent(client, Date.now, (code) => console.error(`agent_status=${code}`));
-  console.log("cloud_session_ready; waiting for new controlled inbound direct messages");
+  let acceptedMessages = 0;
+  const sessionTimer = setTimeout(() => {
+    console.log("live_session_expired");
+    void stop();
+  }, LIVE_SESSION_MILLISECONDS);
+  sessionTimer.unref();
+  console.log(`live_session_ready; sender_allowlist=enabled; expires_in_seconds=${LIVE_SESSION_MILLISECONDS / 1000}; max_messages=${LIVE_SESSION_MAX_MESSAGES}`);
   try {
     // Serial consumption avoids creating an unbounded application work queue.
     for await (const [space, message] of application.messages) {
       if (controller.signal.aborted) break;
       if (message.platform !== "imessage") continue;
-      const event = toIncomingEvent(imessage(space), imessage(message), startedAt);
-      if (event) await handler.handle(event, controller.signal);
+      const event = toIncomingEvent(imessage(space), imessage(message), startedAt, Date.now(), allowedSender);
+      if (!event) continue;
+      acceptedMessages += 1;
+      await handler.handle(event, controller.signal);
+      if (acceptedMessages >= LIVE_SESSION_MAX_MESSAGES) {
+        console.log("live_session_message_limit_reached");
+        await stop();
+        break;
+      }
     }
   } finally {
+    clearTimeout(sessionTimer);
     controller.abort();
     process.removeListener("SIGINT", stop);
     process.removeListener("SIGTERM", stop);
-    await application.stop();
+    await (stopPromise ?? application.stop());
     globalThis.fetch = originalFetch;
   }
 }

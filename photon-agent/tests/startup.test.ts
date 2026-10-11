@@ -3,11 +3,9 @@ import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-// The approval gate precedes configuration/SDK startup, including for --live.
-// The child also refuses environment-file reads and network calls so a future
-// regression cannot turn this startup assertion into a connected test.
+// Invalid live-session arguments must fail before configuration or SDK startup.
 for (const args of [[], ["--help"], ["--live=false"], ["--live", "unexpected-extra-argument"], ["--live"]]) {
-  test(`cloud startup stays disabled for arguments ${JSON.stringify(args)}`, () => {
+  test(`cloud startup rejects invalid session arguments ${JSON.stringify(args)}`, () => {
     const entry = fileURLToPath(new URL("../src/index.js", import.meta.url));
     const script = `
       import fs from "node:fs";
@@ -28,7 +26,7 @@ for (const args of [[], ["--help"], ["--live=false"], ["--live", "unexpected-ext
     assert.equal(result.error, undefined);
     assert.equal(result.status, 1);
     assert.equal(result.stdout, "");
-    assert.match(result.stderr, /Live Photon replies are disabled/);
+    assert.match(result.stderr, /Live replies require one explicitly allowlisted E\.164 sender/);
     assert.doesNotMatch(result.stderr, /cloud_session_ready|projectSecret|GEMINI_API_KEY|SPECTRUM_PROJECT_SECRET/);
   });
 }

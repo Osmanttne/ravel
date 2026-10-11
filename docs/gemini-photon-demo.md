@@ -39,11 +39,13 @@ inbound webhook or access to the Mac's personal Messages database. Keep the Mac,
 backend, and agent running during a local demo. The iPhone app still needs its
 configured LAN backend address; deploying the agent is a separate step.
 
-**Local owner requirement:** before any live send or automatic reply, show the
-exact recipient and outgoing text to the user and obtain approval. Use the
-bounded receive/check/preview flow and a separately approved send. Keep the
-unattended reply runner disabled. Credential/account verification alone does
-not authorize a message.
+**Local owner requirement:** the user approved one bounded live session that
+automatically replies to their own registered sender for the demo. Launch it
+with that exact sender allowlisted; it expires after 30 minutes or 20 messages.
+Do not use a fixed response, another person's number, or a persistent service.
+For other recipients or separately reviewed sends, show the exact destination
+and full outgoing body and obtain approval first. Credential/account verification
+alone does not authorize a message.
 
 See [Photon setup](../photon-agent/README.md) for the actual start and validation
 commands. Current account behavior is documented in Photon's
@@ -72,8 +74,10 @@ The additive nullable fields are `credentials_requested`,
 `credential_request`, `verification_code_request`, and `account_threat`.
 Missing public fields preserve compatibility as `null`; categories are unchanged.
 Unclear/conflicting Gemini evidence takes precedence and requests human review.
-Offline positive/benign controls pass, but expanded live validation is pending
-after a truthful provider timeout. Do not advertise general phishing accuracy.
+The latest expanded live validation passed all ten synthetic controls with nine
+Gemini generations and one local-only URL check. Earlier attempts timed out or
+missed benign/account-threat outcomes; the latest result does not establish
+general phishing accuracy.
 
 Run the fixture coverage checklist from the repository root:
 
@@ -108,9 +112,10 @@ or application retry. See [Gemini verification](gemini.md).
    stream and client before checking, and supports cancellation throughout.
    Each outgoing reply needs fresh approval. Explain what evidence is available
    and what remains unknown. Missing evidence never means safe.
-4. Show a controlled timeout/error in the offline test/demo path. The agent must
-   display a truthful failure; it must not replace a failed live call with a mock
-   positive result. Every fixture assessment must be visibly labeled.
+4. Run `npm --prefix photon-agent run demo` to show the explicitly labeled
+   simulated provider timeout. The agent displays its truthful fixed failure
+   without making a network call; it never substitutes a fixture result after a
+   failed live request. Every fixture assessment must be visibly labeled.
 
 The application does not persist submitted private checks as reports. Photon and
 Google process selected content under their own provider terms; application
@@ -124,9 +129,13 @@ Two approved setup messages received provider acknowledgements, and the user
 confirmed receipt on both phones. A subsequent exact synthetic ticket message
 was received in the owner's direct chat, checked through Gemini, previewed,
 approved, and sent once; the user confirmed receipt of the assessment reply.
-That controlled reviewed text round trip is verified. The unattended reply
-runner remains disabled, and further sends require fresh approval of the exact
-recipient and text. See the [sanitized round-trip proof](artifacts/photon-gemini-round-trip.json)
+That controlled reviewed text round trip is verified. The automatic path is
+limited to the user's bounded demo session. Benign and code-request/account-threat
+synthetic texts have both received Gemini-backed responses and user-confirmed
+handset receipt. The suspicious case returned `suspicious_verify` with unverified
+observations and code-sharing guidance. See the [benign](artifacts/photon-auto-reply-benign-control.json)
+and [suspicious](artifacts/photon-auto-reply-suspicious-control.json) records,
+plus the [reviewed round-trip proof](artifacts/photon-gemini-round-trip.json)
 and [Photon record](artifacts/photon-validation.json).
 
 The general review CLI also received a standalone synthetic URL rendered as an
@@ -143,8 +152,12 @@ reviewed text/URL slice of Milestone 5 is complete; see the
 Still required:
 
 - Sponsor entitlement and routing/registration for each additional judge.
-- Successful expanded live Gemini controls, a live benign Photon text control,
-  and deliberate offline failure demonstration.
-- Manual confirmation of the complete Photos Share flow on the physical iPhone.
 - A screen recording backup and broader false-alert evaluation before general
   detection claims. Milestone 6 remains in progress.
+
+The expanded live Gemini synthetic controls, benign Photon text round trip, and
+physical-iPhone Photos Share flow are verified. The latest Share Extension result
+was `suspicious_verify` for a synthetic credential-request screenshot; it remained
+a private check and created no report. See the [sanitized device proof](artifacts/ios-gemini-share-acceptance.json).
+The offline provider-timeout demonstration also passed without making network
+requests; see the [run record](artifacts/offline-failure-demo.json).

@@ -1,6 +1,6 @@
 # Gemini extraction setup
 
-Milestone 2 implements a Gemini Developer API adapter for selected text and screenshots; Milestone 6 adds bounded account-secret observations and controls. Fixture mode remains the default. Earlier real synthetic ticket text and screenshot checks passed with `gemini-3.8-flash` and SDK 2.29.0 on 2026-10-10 at 21:56 UTC. [Sanitized proof](artifacts/gemini-live-verification.json) records those two successful Google requests; mocked tests cover validation and failure paths. The later expanded live coverage run on 2026-10-11 completed nine generations but missed three expected outcomes: account-threat payment was described as an advance fee, and two benign text controls requested human review. The deterministic assessment now prevents account-threat payments from being labeled advance fees. Successful live coverage and benign-control validation remain pending; see [the detailed control record](demo-script.md). The user confirmed an image assessment before the rename. Updated-device acceptance is separate and not implied by that historical result.
+Milestone 2 implements a Gemini Developer API adapter for selected text and screenshots; Milestone 6 adds bounded account-secret observations and controls. Fixture mode remains the default. Earlier real synthetic ticket text and screenshot checks passed with `gemini-3.8-flash` and SDK 2.29.0 on 2026-10-10 at 21:56 UTC. [Sanitized proof](artifacts/gemini-live-verification.json) records those two successful Google requests; mocked tests cover validation and failure paths. The expanded live coverage run initially had three mismatches; after the deterministic account-threat payment correction, the 2026-10-11 follow-up passed all ten synthetic controls with nine Gemini generations and one local-only URL check. This limited evaluation does not establish general fraud accuracy. See [the detailed control record](demo-script.md). A later physical-iPhone Photos Share check also succeeded with `gemini-3.5-flash-lite`; the current device result is recorded in [the sanitized acceptance artifact](artifacts/ios-gemini-share-acceptance.json).
 
 ## Server configuration
 
@@ -17,6 +17,14 @@ GEMINI_TIMEOUT_SECONDS=30
 Fill the blank key in the server's local environment. Keep `.env` out of Git; credentials belong on the backend and never in the future iPhone client. Process environment values override `.env`. Restart the backend after configuration changes.
 
 `GEMINI_MODEL` has no hard-coded default. The example `gemini-3.8-flash` is documented as a stable model supporting text/image input and structured output, with a September 2026 update. This model was verified with the configured local account on synthetic text and image inputs; availability for other accounts or future runs is not guaranteed by that check. [Official model documentation](https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash).
+
+On 2026-10-10, the configured account returned HTTP 429 `RESOURCE_EXHAUSTED`
+for a harmless basic-generation diagnostic on `gemini-3.8-flash`. The same
+diagnostic succeeded with `gemini-3.5-flash-lite`, and the physical-device
+synthetic Photos Share check then completed. For this local account, `.env` now
+selects `gemini-3.5-flash-lite`; model quotas and availability can vary, so
+diagnose provider errors rather than treating a healthy `/health` response as
+proof that generation is available.
 
 `GEMINI_TIMEOUT_SECONDS` defaults to 30 and must be finite, greater than zero, and at most 120. `APP_ENV` accepts only `development` or `test`; this does not enable a public-production deployment. Missing key/model or invalid timeout fails startup. To return to fixture mode, set `RAVEL_FIXTURE_MODE=true` and restart. There is no automatic fallback after provider failures.
 

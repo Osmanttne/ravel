@@ -4,12 +4,12 @@ Read `RAVEL_CONTEXT.md` **fully** before changing any code; it is the canonical 
 
 ## Default working behavior
 
-- Implement the next **single milestone** from Section 14 unless the user specifies otherwise. The user-approved 2026-10-10 priority is Gemini + Photon: Milestone 5's bounded reviewed text/URL slice is complete; Milestone 6 adds account-secret evidence, benign controls, and demo hardening while manual iOS Photos acceptance remains pending. Milestone 4 is deferred.
+- Implement the next **single milestone** from Section 14 unless the user specifies otherwise. The user-approved 2026-10-10 priority is Gemini + Photon: Milestone 5's bounded reviewed text/URL slice is complete; Milestone 6 adds account-secret evidence, benign controls, and demo hardening. Manual iOS Photos Share acceptance has passed on the physical iPhone with synthetic content, and the offline failure demo is verified; a backup recording remains. Milestone 4 is deferred.
 - Inspect existing files first. Prefer working, testable vertical slices over wide scaffolds.
 - Preserve the iOS-first product: SwiftUI app + Share Extension for **explicitly shared** screenshots, text, and URLs; Photon iMessage entry point; common FastAPI backend; Gemini understanding. Tiger Data, report persistence, and community matching are deferred until requested.
 - Keep `POST /v1/check` private: **it must never create an opt-in report**. Reports require separate confirmation and a distinct endpoint.
 - Never silently scan messages, clipboard, or notifications; never claim iOS permits blanket access to third-party conversations.
-- Before any live Photon send or automatic reply, show the user the exact recipient and outgoing message and obtain approval. The user explicitly requires this because Photon uses their phone number. Account verification must remain read-only until approved; do not activate the reply listener without a reviewed send flow.
+- The user explicitly approved a real, bounded Photon auto-reply session for their own registered sender for the demo. Restrict it to the exact E.164 sender passed at launch, the 30-minute/20-message limits, and the live Gemini backend; never use a canned/fixture reply. Any other recipient or longer-running listener still requires fresh approval. Keep account verification read-only.
 - Do not call shared URL destinations or execute uploaded content. Treat uploads as untrusted data and validate size/type.
 - Model-provided fraud indicators are unverified until corroborated. Never label absence of matches as `safe`; never publicly accuse a named person from unreviewed reports.
 - Use fixture mode with synthetic `.example` links for tests and demos. Visibly label mocked assessments.

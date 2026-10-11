@@ -1,131 +1,272 @@
 import RavelCore
 import SwiftUI
 
-/// Shared by the containing app and Share Extension; no reporting or external-link actions.
 public struct RavelResultView: View {
     public let response: CheckResponse
     public let isURLOnly: Bool
 
-    /// Submission context supplies URL provenance when fixture observations are absent.
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var palette: RavelPalette { RavelPalette(colorScheme) }
+
     public init(response: CheckResponse, isURLOnly: Bool = false) {
         self.response = response
         self.isURLOnly = isURLOnly
     }
 
     public var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                Label(modeTitle, systemImage: response.mode == .fixture ? "flask" : "sparkles")
-                    .font(.subheadline.weight(.semibold))
-                    .padding(12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
-                    .accessibilityLabel(modeTitle)
+        ZStack {
+            RavelBackground()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    modeBadge
+                    assessmentCard
+                    if isLocallyParsedURL {
+                        localURLNotice
+                    }
+                    nextStepCard
+                    explanationCard
+                    limitsCard
+                    privacyCard
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 18)
+                .padding(.bottom, 30)
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+            }
+        }
+    }
 
-                VStack(alignment: .leading, spacing: 10) {
+    private var modeBadge: some View {
+        HStack(spacing: 9) {
+            Image(systemName: response.mode == .fixture ? "flask.fill" : "sparkles")
+                .foregroundStyle(response.mode == .fixture ? palette.review : palette.information)
+            Text(modeTitle)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(palette.primaryText)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
+        }
+        .padding(.bottom, 18)
+        .accessibilityLabel(modeTitle)
+    }
+
+    private var assessmentCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .top, spacing: 14) {
+                VStack(alignment: .leading, spacing: 9) {
+                    RavelEyebrow(title: "ASSESSMENT", palette: palette)
                     Text(categoryTitle)
-                        .font(.title2.bold())
+                        .font(.system(.title2, design: .rounded, weight: .bold))
+                        .foregroundStyle(palette.primaryText)
+                        .fixedSize(horizontal: false, vertical: true)
                         .accessibilityAddTraits(.isHeader)
-                    Text(response.assessment.summary)
-                    Text("Verify before sending money or sensitive information.")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
                 }
+                Spacer(minLength: 0)
+                Image(systemName: statusSymbol)
+                    .font(.system(size: 25, weight: .medium))
+                    .foregroundStyle(statusColor)
+                    .padding(.top, 2)
+            }
+            Rectangle()
+                .fill(palette.border)
+                .frame(height: 1)
+            Text(response.assessment.summary)
+                .font(.body)
+                .foregroundStyle(palette.primaryText)
+                .fixedSize(horizontal: false, vertical: true)
+            Label("Verify before sending money or sensitive information.",
+                  systemImage: "arrow.up.right.circle")
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(palette.secondaryText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.vertical, 18)
+        .overlay(alignment: .topLeading) {
+            Rectangle().fill(statusColor).frame(width: 32, height: 2)
+        }
+    }
 
-                if isLocallyParsedURL {
-                    Label("Link parsed only. Its destination wasn't visited or analyzed by AI.",
-                          systemImage: "link")
+    private var localURLNotice: some View {
+        Label("Link parsed only. Its destination wasn't visited or analyzed by AI.",
+              systemImage: "link")
+            .font(.subheadline.weight(.medium))
+            .foregroundStyle(palette.information)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.vertical, 16)
+            .overlay(alignment: .top) { resultDivider }
+    }
+
+    private var nextStepCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.turn.down.right")
+                    .foregroundStyle(palette.accent)
+                RavelEyebrow(title: "A PRACTICAL NEXT STEP", palette: palette)
+            }
+            Text(response.assessment.recommendedAction)
+                .font(.body.weight(.medium))
+                .foregroundStyle(palette.primaryText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.vertical, 17)
+        .overlay(alignment: .top) { resultDivider }
+    }
+
+    private var explanationCard: some View {
+        VStack(spacing: 0) {
+            DisclosureGroup {
+                VStack(alignment: .leading, spacing: 16) {
+                    if response.assessment.indicators.isEmpty {
+                        Text("No sufficiently supported tactic indicators were found. Missing evidence does not establish safety.")
+                            .foregroundStyle(palette.secondaryText)
+                    }
+                    ForEach(Array(response.assessment.indicators.enumerated()), id: \.offset) { _, indicator in
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(indicator.description)
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(palette.primaryText)
+                            Text("Source: \(sourceTitle(indicator.evidenceSource.rawValue))")
+                                .font(.caption)
+                                .foregroundStyle(palette.secondaryText)
+                            Text("Evidence: \(verificationTitle(indicator.verificationLevel.rawValue))")
+                                .font(.caption)
+                                .foregroundStyle(palette.secondaryText)
+                        }
+                        .accessibilityElement(children: .combine)
+                    }
+                    if let observations = response.observations,
+                       observations.evidenceSource.rawValue == "gemini" {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("AI observations · unverified")
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(palette.information)
+                            Text("Payment request: \(claimTitle(observations.paymentRequested))")
+                            Text("Urgency: \(claimTitle(observations.urgencyIndicated))")
+                            Text("Secrecy request: \(claimTitle(observations.secrecyRequested))")
+                            Text("Password or login credential request: \(claimTitle(observations.credentialsRequested))")
+                            Text("Verification-code request: \(claimTitle(observations.verificationCodeRequested))")
+                            Text("Account threat: \(claimTitle(observations.accountThreatIndicated))")
+                            ForEach(Array(observations.uncertaintyCodes.enumerated()), id: \.offset) { _, code in
+                                Text(uncertaintyTitle(code.rawValue))
+                                    .foregroundStyle(palette.secondaryText)
+                            }
+                        }
                         .font(.callout)
-                }
-
-                DisclosureGroup("Why this result?") {
-                    VStack(alignment: .leading, spacing: 16) {
-                        if response.assessment.indicators.isEmpty {
-                            Text("No sufficiently supported tactic indicators were found. Missing evidence does not establish safety.")
-                        }
-                        ForEach(Array(response.assessment.indicators.enumerated()), id: \.offset) { _, indicator in
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(indicator.description)
-                                Text("Source: \(sourceTitle(indicator.evidenceSource.rawValue))")
-                                    .font(.caption)
-                                Text("Evidence: \(verificationTitle(indicator.verificationLevel.rawValue))")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            .accessibilityElement(children: .combine)
-                        }
-                        if let observations = response.observations,
-                           observations.evidenceSource.rawValue == "gemini" {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("AI observations · unverified")
-                                    .font(.headline)
-                                Text("Payment request: \(claimTitle(observations.paymentRequested))")
-                                Text("Urgency: \(claimTitle(observations.urgencyIndicated))")
-                                Text("Secrecy request: \(claimTitle(observations.secrecyRequested))")
-                                Text("Password or login credential request: \(claimTitle(observations.credentialsRequested))")
-                                Text("Verification-code request: \(claimTitle(observations.verificationCodeRequested))")
-                                Text("Account threat: \(claimTitle(observations.accountThreatIndicated))")
-                                ForEach(Array(observations.uncertaintyCodes.enumerated()), id: \.offset) { _, code in
-                                    Text(uncertaintyTitle(code.rawValue))
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                            .font(.callout)
-                        }
-                        if let observations = response.observations,
-                           !observations.destinations.isEmpty {
+                        .foregroundStyle(palette.primaryText)
+                    }
+                    if let observations = response.observations,
+                       !observations.destinations.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
                             Text("Visible destinations")
-                                .font(.headline)
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(palette.primaryText)
                             ForEach(Array(observations.destinations.enumerated()), id: \.offset) { _, destination in
-                                // Plain text only: suspect destinations are never opened by the UI.
                                 Text(destination)
                                     .font(.callout.monospaced())
+                                    .foregroundStyle(palette.information)
                                     .textSelection(.enabled)
                             }
                         }
-                        Text("Community report lookup is not available yet.")
-                            .font(.callout)
                     }
-                    .padding(.top, 12)
+                    Text("Community report lookup is not available yet.")
+                        .font(.caption)
+                        .foregroundStyle(palette.secondaryText)
                 }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Next step")
+                .padding(.top, 14)
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "waveform.path.ecg.rectangle")
+                        .foregroundStyle(palette.brandTeal)
+                    Text("Why this result?")
                         .font(.headline)
-                        .accessibilityAddTraits(.isHeader)
-                    Text(response.assessment.recommendedAction)
+                        .foregroundStyle(palette.primaryText)
                 }
-
-                DisclosureGroup("Limits of this check") {
-                    VStack(alignment: .leading, spacing: 10) {
-                        ForEach(Array(response.limitations.enumerated()), id: \.offset) { _, limitation in
-                            Text(limitation)
-                        }
-                    }
-                    .font(.callout)
-                    .padding(.top, 12)
-                }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("Checked privately", systemImage: "lock")
-                        .font(.headline)
-                    Text("This check didn't create a community report.")
-                    Text("Community reporting isn't available yet.")
-                        .foregroundStyle(.secondary)
-                }
-                .font(.callout)
-                .accessibilityElement(children: .combine)
             }
-            .padding()
+            .tint(palette.accent)
         }
+        .padding(.vertical, 15)
+        .overlay(alignment: .top) { resultDivider }
+    }
+
+    private var limitsCard: some View {
+        VStack(spacing: 0) {
+            DisclosureGroup {
+                VStack(alignment: .leading, spacing: 10) {
+                    ForEach(Array(response.limitations.enumerated()), id: \.offset) { _, limitation in
+                        Text(limitation)
+                            .font(.callout)
+                            .foregroundStyle(palette.secondaryText)
+                    }
+                }
+                .padding(.top, 12)
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "info.circle")
+                        .foregroundStyle(palette.brandViolet)
+                    Text("Limits of this check")
+                        .font(.headline)
+                        .foregroundStyle(palette.primaryText)
+                }
+            }
+            .tint(palette.accent)
+        }
+        .padding(.vertical, 15)
+        .overlay(alignment: .top) { resultDivider }
+    }
+
+    private var privacyCard: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "lock.shield.fill")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(palette.accent)
+                .padding(.top, 2)
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Checked privately")
+                    .font(.headline)
+                    .foregroundStyle(palette.primaryText)
+                Text("This check didn't create a community report.")
+                    .font(.subheadline)
+                    .foregroundStyle(palette.primaryText)
+                Text("Community reporting isn't available yet.")
+                    .font(.caption)
+                    .foregroundStyle(palette.secondaryText)
+            }
+        }
+        .padding(.vertical, 16)
+        .overlay(alignment: .top) { resultDivider }
+        .accessibilityElement(children: .combine)
+    }
+
+    private var resultDivider: some View {
+        Rectangle().fill(palette.border).frame(height: 1)
     }
 
     private var categoryTitle: String {
         switch response.assessment.category {
         case .knownMaliciousEvidence: return "Known malicious evidence"
-        case .suspiciousVerify: return "Suspicious — verify before acting"
+        case .suspiciousVerify: return "Suspicious: verify before acting"
         case .insufficientEvidence: return "Insufficient evidence"
         case .needsHumanReview: return "Needs human review"
+        }
+    }
+
+    private var statusSymbol: String {
+        switch response.assessment.category {
+        case .knownMaliciousEvidence: return "xmark.shield.fill"
+        case .suspiciousVerify: return "exclamationmark.shield.fill"
+        case .insufficientEvidence: return "questionmark.circle"
+        case .needsHumanReview: return "person.crop.circle.badge.questionmark"
+        }
+    }
+
+    private var statusColor: Color {
+        switch response.assessment.category {
+        case .knownMaliciousEvidence: return palette.danger
+        case .suspiciousVerify: return palette.caution
+        case .insufficientEvidence: return palette.information
+        case .needsHumanReview: return palette.review
         }
     }
 

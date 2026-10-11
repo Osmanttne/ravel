@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 500" role="img" aria-labelledby="title description">
+  <title id="title">Ravel private-check flow</title>
+  <desc id="description">A uniform four-stage flow: a user shares one item from iPhone or iMessage, Ravel validates it, Gemini or local URL parsing examines it, and Ravel returns a private assessment.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#09121d"/>
+      <stop offset="1" stop-color="#0b151c"/>
+    </linearGradient>
+    <linearGradient id="signal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#326bff"/>
+      <stop offset="0.5" stop-color="#08c3c7"/>
+      <stop offset="1" stop-color="#43c365"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#9eb3c8" stroke-opacity=".035"/>
+    </pattern>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M1 1 6 4 1 7" fill="none" stroke="#6688a2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      .eyebrow{font:600 12px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2.6px;fill:#92a8ba}
+      .headline{font:600 32px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.8px;fill:#edf4f8}
+      .stage{font:600 11px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:1.8px;fill:#8499aa}
+      .label{font:600 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#edf4f8}
+      .detail{font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#9cafc0}
+      .mono{font:600 11px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:1px;fill:#9cafc0}
+    </style>
+  </defs>
+  <rect width="1400" height="500" rx="24" fill="url(#bg)"/>
+  <rect width="1400" height="500" rx="24" fill="url(#grid)"/>
+  <path d="M0 182H1400M0 448H1400" stroke="#b6c9d8" stroke-opacity=".08"/>
+
+  <text x="64" y="48" class="eyebrow">RAVEL / PRIVATE CHECKS</text>
+  <text x="64" y="91" class="headline">One chosen item. A clearer next step.</text>
+  <text x="65" y="120" class="detail">Two entry points. One consistent, private assessment.</text>
+
+  <text x="80" y="218" class="stage">01  INPUT</text>
+  <text x="394" y="218" class="stage">02  VALIDATE</text>
+  <text x="660" y="218" class="stage">03  UNDERSTAND</text>
+  <text x="1090" y="218" class="stage">04  GUIDE</text>
+  <path d="M350 204V414M630 204V414M1050 204V414" stroke="#91a6b8" stroke-opacity=".12" stroke-dasharray="2 8"/>
+
+  <path d="M286 286C330 286 348 300 385 316M286 358C330 358 348 344 385 328" fill="none" stroke="#627d94" stroke-width="1.6"/>
+  <path d="M512 322H684" fill="none" stroke="#627d94" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <path d="M714 300C800 300 858 282 935 282M714 344C800 344 858 362 935 362" fill="none" stroke="#627d94" stroke-width="1.6"/>
+  <path d="M974 282C1018 282 1026 306 1070 322M974 362C1018 362 1026 338 1070 322" fill="none" stroke="#627d94" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <path d="M1108 322H1160" fill="none" stroke="url(#signal)" stroke-width="2.2" marker-end="url(#arrow)"/>
+
+  <circle cx="104" cy="286" r="15" fill="#10213b" stroke="#326bff" stroke-width="1.4"/>
+  <rect x="99" y="276" width="10" height="19" rx="2" fill="none" stroke="#5790ff" stroke-width="1.5"/>
+  <path d="M102 292h4" stroke="#5790ff" stroke-width="1.3" stroke-linecap="round"/>
+  <text x="132" y="282" class="label">iPhone</text>
+  <text x="132" y="302" class="detail">App + Share Extension</text>
+
+  <circle cx="104" cy="358" r="15" fill="#102a29" stroke="#43c365" stroke-width="1.4"/>
+  <path d="M97 352h14a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-6l-4 3v-3h-4a3 3 0 0 1-3-3v-6a3 3 0 0 1 3-3Z" fill="none" stroke="#56d478" stroke-width="1.3" stroke-linejoin="round"/>
+  <text x="132" y="354" class="label">iMessage</text>
+  <text x="132" y="374" class="detail">Photon Spectrum agent</text>
+
+  <circle cx="455" cy="322" r="29" fill="#0b1e29" stroke="#08c3c7" stroke-opacity=".42" stroke-width="7"/>
+  <circle cx="455" cy="322" r="8" fill="#08c3c7"/>
+  <text x="455" y="375" text-anchor="middle" class="label">Ravel API</text>
+  <text x="455" y="396" text-anchor="middle" class="detail">Validate and route</text>
+
+  <circle cx="704" cy="300" r="17" fill="#10213b" stroke="#326bff" stroke-width="1.4"/>
+  <path d="M696 301c3-7 13-7 16 0M698 305c2-4 10-4 12 0" fill="none" stroke="#5790ff" stroke-width="1.4" stroke-linecap="round"/>
+  <circle cx="704" cy="308" r="1.4" fill="#5790ff"/>
+  <text x="739" y="296" class="label">Gemini</text>
+  <text x="739" y="317" class="detail">Text and screenshots</text>
+
+  <circle cx="704" cy="344" r="17" fill="#102a29" stroke="#43c365" stroke-width="1.4"/>
+  <path d="M697 339h14M697 344h10M697 349h6" stroke="#56d478" stroke-width="1.5" stroke-linecap="round"/>
+  <text x="739" y="340" class="label">Link-only check</text>
+  <text x="739" y="361" class="detail">Parsed locally, never opened</text>
+
+  <circle cx="1089" cy="322" r="20" fill="#0d211b" stroke="#43c365" stroke-opacity=".62" stroke-width="2"/>
+  <path d="m1081 322 6 6 11-13" fill="none" stroke="#68db83" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="1180" y="316" class="label">Private assessment</text>
+  <text x="1180" y="340" class="detail">Evidence and next step</text>
+
+  <path d="M64 472C240 452 394 486 570 468S900 452 1070 471 1280 486 1336 463" fill="none" stroke="url(#signal)" stroke-opacity=".65" stroke-width="1.8"/>
+  <circle cx="198" cy="462" r="2.7" fill="#326bff"/><circle cx="455" cy="475" r="2.7" fill="#08c3c7"/><circle cx="846" cy="461" r="2.7" fill="#43c365"/><circle cx="1190" cy="480" r="2.7" fill="#6257ff"/>
+</svg>

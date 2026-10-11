@@ -1,0 +1,22 @@
+{
+  "observed_on": "2026-10-10",
+  "status": "passed",
+  "acceptance": "physical_iphone_photos_share_extension",
+  "input": "synthetic_credential_request_screenshot",
+  "provider_mode": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "assessment_category": "suspicious_verify",
+  "report_created": false,
+  "user_confirmation": "Screenshot showed the completed Ravel result with private-check and no-report status.",
+  "model_recovery": {
+    "previous_model": "gemini-3.8-flash",
+    "diagnostic_result": "429_RESOURCE_EXHAUSTED",
+    "replacement_diagnostic": "basic_generation_succeeded",
+    "device_retry": "completed_successfully"
+  },
+  "limitations": [
+    "Gemini observations are unverified and do not establish fraud.",
+    "A synthetic device check does not establish general detection accuracy."
+  ],
+  "raw_screenshot_or_message_saved": false
+}
